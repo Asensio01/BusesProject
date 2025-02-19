@@ -1,4 +1,4 @@
-package busesProject.models;
+package busesProject.enums;
 
 public enum TablaModificada {
     RESERVAS,RUTAS

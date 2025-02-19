@@ -1,5 +1,7 @@
 package busesProject.models;
 
+import busesProject.enums.Accion;
+import busesProject.enums.TablaModificada;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -12,7 +14,7 @@ public class Auditoria {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer idAuditoria;
+    private Integer id_auditoria;
 
     @ManyToOne
     @JoinColumn(name = "id_usuario", nullable = false)
@@ -20,10 +22,10 @@ public class Auditoria {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private TablaModificada tablaModificada;
+    private TablaModificada tabla_modificada;
 
     @Column(nullable = false)
-    private Integer idRegistro;
+    private Integer id_registro;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)

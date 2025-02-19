@@ -1,4 +1,4 @@
-package busesProject.models;
+package busesProject.enums;
 
 public enum Rol {
     ADMIN,USER

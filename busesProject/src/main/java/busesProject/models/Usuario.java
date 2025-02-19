@@ -1,5 +1,6 @@
 package busesProject.models;
 
+import busesProject.enums.Rol;
 import jakarta.persistence.*;
 import lombok.*;
 
