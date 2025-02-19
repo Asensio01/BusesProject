@@ -1,6 +1,11 @@
 package busesProject.models;
+
+
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table(name = "autobuses_caracteristicas")
@@ -13,9 +18,9 @@ public class AutobusCaracteristica {
   @EmbeddedId
   private AutobusCaracteristicaId id;
   @ManyToOne
-  @MapsId("id_autobus")
+  @MapsId("idAutobus")
   private Autobus autobus;
   @ManyToOne
-  @MapsId("id_caracteristica")
+  @MapsId("idCaracteristica")
   private CaracteristicaBus caracteristicaBus;
 }

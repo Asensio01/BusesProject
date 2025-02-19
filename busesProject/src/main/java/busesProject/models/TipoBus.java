@@ -1,7 +1,10 @@
 package busesProject.models;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table(name = "tipos_bus")
@@ -12,9 +15,14 @@ import lombok.*;
 public class TipoBus {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id_tipo;
+    @Column(name = "id_tipo")
+    private Integer idTipo;
     @Column(nullable = false, unique = true, length = 50)
     private String nombre;
+    @Column(name = "capacidad_maxima",nullable = false)
+    private Integer capacidadMaxima;
     @Column(nullable = false)
-    private Integer capacidad_maxima;
+    private Integer filas;
+    @Column(name = "asientos_por_fila",nullable = false)
+    private Integer asientosPorFila;
 }

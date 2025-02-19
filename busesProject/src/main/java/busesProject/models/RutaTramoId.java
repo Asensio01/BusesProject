@@ -1,8 +1,14 @@
 package busesProject.models;
 
 import busesProject.enums.TipoViaje;
-import jakarta.persistence.*;
-import lombok.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Embeddable;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.io.Serializable;
 import java.util.Objects;
@@ -16,7 +22,6 @@ import java.util.Objects;
 public class RutaTramoId implements Serializable{
   @Column(name = "id_ruta")
   private Integer idRuta;
-
   @Column(name = "id_tramo")
   private Integer idTramo;
 

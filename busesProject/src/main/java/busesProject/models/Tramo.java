@@ -1,7 +1,10 @@
 package busesProject.models;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalTime;
 
@@ -15,13 +18,16 @@ import java.time.LocalTime;
 public class Tramo {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Integer id_tramo;
+  @Column(name = "id_tramo")
+  private Integer idTramo;
+  @ManyToOne
   @JoinColumn(name = "id_ciudad_origen", nullable = false)
-  private Ciudad ciudad_origen;
+  private Ciudad ciudadOrigen;
+  @ManyToOne
   @JoinColumn(name = "id_ciudad_destino", nullable = false)
-  private Ciudad ciudad_destino;
-  @Column(nullable = false)
-  private LocalTime hora_salida;
+  private Ciudad ciudadDestino;
+  @Column(name = "hora_salida",nullable = false)
+  private LocalTime horaSalida;
   @Column(nullable = false)
   private Integer duracion;
 }

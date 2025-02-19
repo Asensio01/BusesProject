@@ -1,6 +1,10 @@
 package busesProject.models;
+
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table(name = "caracteristicas_bus")
@@ -12,7 +16,8 @@ import lombok.*;
 public class CaracteristicaBus {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id_caracteristica;
+    @Column(name = "idCaracteristica")
+    private Integer idCaracteristica;
     @Column(nullable = false, unique = true, length = 50)
     private String nombre;
 }

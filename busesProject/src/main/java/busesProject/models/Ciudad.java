@@ -2,7 +2,10 @@ package busesProject.models;
 
 import busesProject.enums.Departamento;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table(name = "ciudades")
@@ -13,7 +16,8 @@ import lombok.*;
 public class Ciudad {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Integer id_ciudad;
+  @Column(name = "id_ciudad")
+  private Integer idCiudad;
   @Column(nullable = false, length = 100)
   private String nombre;
   @Enumerated(EnumType.STRING)

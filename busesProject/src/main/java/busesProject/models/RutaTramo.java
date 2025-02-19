@@ -2,7 +2,10 @@ package busesProject.models;
 
 import busesProject.enums.TipoViaje;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table(name = "rutas_tramos")
@@ -20,5 +23,7 @@ public class RutaTramo {
   @MapsId("idTramo")
   private Tramo tramo;
   @Enumerated(EnumType.STRING)
+  @MapsId("tipoViaje")
+  @Column(name = "tipo_viaje")
   private TipoViaje tipoViaje;
 }

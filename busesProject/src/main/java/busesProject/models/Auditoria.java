@@ -3,18 +3,25 @@ package busesProject.models;
 import busesProject.enums.Accion;
 import busesProject.enums.TablaModificada;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.Date;
 
 @Entity
 @Table(name = "auditorias")
-@Getter @Setter @NoArgsConstructor @AllArgsConstructor
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class Auditoria {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id_auditoria;
+    @Column(name = "id_auditoria")
+    private Integer idAuditoria;
 
     @ManyToOne
     @JoinColumn(name = "id_usuario", nullable = false)
@@ -24,8 +31,8 @@ public class Auditoria {
     @Column(nullable = false)
     private TablaModificada tabla_modificada;
 
-    @Column(nullable = false)
-    private Integer id_registro;
+    @Column(name = "id_registro",nullable = false)
+    private Integer idRegistro;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)

@@ -1,7 +1,11 @@
 package busesProject.models;
 
+
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table(name = "autobuses")
@@ -12,9 +16,11 @@ import lombok.*;
 public class Autobus {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id_autobus;
+    @Column(name = "id_autobus")
+    private Integer idAutobus;
     @Column(nullable = false, unique = true, length = 20)
     private String placa;
+    @ManyToOne
     @JoinColumn(name = "id_tipo",nullable = false)
     private TipoBus tipo;
 }
