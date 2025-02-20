@@ -16,14 +16,18 @@ import lombok.Setter;
 public class RutaTramo {
   @EmbeddedId
   private RutaTramoId id;
+
   @ManyToOne
   @MapsId("idRuta")
+  @JoinColumn(name = "id_ruta")
   private Ruta ruta;
+
   @ManyToOne
   @MapsId("idTramo")
+  @JoinColumn(name = "id_tramo")
   private Tramo tramo;
+
   @Enumerated(EnumType.STRING)
-  @MapsId("tipoViaje")
-  @Column(name = "tipo_viaje")
+  @Column(name = "tipo_viaje",insertable=false, updatable=false)
   private TipoViaje tipoViaje;
 }

@@ -18,12 +18,11 @@ import java.util.Objects;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-
 public class RutaTramoId implements Serializable{
   @Column(name = "id_ruta")
-  private Integer idRuta;
+  private Long idRuta;
   @Column(name = "id_tramo")
-  private Integer idTramo;
+  private Long idTramo;
 
   @Enumerated(EnumType.STRING)
   @Column(name = "tipo_viaje")

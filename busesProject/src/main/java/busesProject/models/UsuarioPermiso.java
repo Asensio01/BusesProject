@@ -15,10 +15,14 @@ import lombok.Setter;
 public class UsuarioPermiso {
   @EmbeddedId
   private UsuarioPermisoId id;
+
   @ManyToOne
-  @MapsId("id_usuario")
+  @JoinColumn(name = "id_usuario")
+  @MapsId("idUsuario")
   private Usuario usuario;
+
   @ManyToOne
-  @MapsId("id_permiso")
+  @JoinColumn(name = "id_permiso")
+  @MapsId("idPermiso")
   private Permiso permiso;
 }

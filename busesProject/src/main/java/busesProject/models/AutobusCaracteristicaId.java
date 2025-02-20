@@ -18,9 +18,9 @@ import java.util.Objects;
 public class AutobusCaracteristicaId implements Serializable {
 
   @Column(name = "id_autobus")
-  private Integer idAutobus;
+  private Long idAutobus;
   @Column(name = "id_caracteristica")
-  private Integer idCaracteristica;
+  private Long idCaracteristica;
 
   @Override
   public boolean equals(Object o) {

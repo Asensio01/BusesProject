@@ -12,12 +12,12 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-
 public class CaracteristicaBus {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "idCaracteristica")
-    private Integer idCaracteristica;
+    @Column(name = "id_caracteristica")
+    private Long idCaracteristica;
+
     @Column(nullable = false, unique = true, length = 50)
     private String nombre;
 }

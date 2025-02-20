@@ -14,20 +14,23 @@ import java.time.LocalTime;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-
 public class Tramo {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "id_tramo")
-  private Integer idTramo;
+  private Long idTramo;
+
   @ManyToOne
   @JoinColumn(name = "id_ciudad_origen", nullable = false)
   private Ciudad ciudadOrigen;
+
   @ManyToOne
   @JoinColumn(name = "id_ciudad_destino", nullable = false)
   private Ciudad ciudadDestino;
+
   @Column(name = "hora_salida",nullable = false)
   private LocalTime horaSalida;
+
   @Column(nullable = false)
   private Integer duracion;
 }

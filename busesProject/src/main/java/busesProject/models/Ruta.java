@@ -1,6 +1,5 @@
 package busesProject.models;
 
-
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -13,12 +12,12 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-
 public class Ruta {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "id_ruta")
-  private Integer idRuta;
+  private Long idRuta;
+
   @Column(name = "nombre_ruta",nullable = false, unique = true, length = 50)
   private String nombreRuta;
 }

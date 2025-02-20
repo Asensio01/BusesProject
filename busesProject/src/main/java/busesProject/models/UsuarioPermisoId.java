@@ -17,20 +17,23 @@ import java.util.Objects;
 @AllArgsConstructor
 public class UsuarioPermisoId implements Serializable {
 
-  private Integer id_usuario;
-  private Integer id_permiso;
+  @Column(name = "id_usuario")
+  private Long idUsuario;
+
+  @Column(name = "id_permiso")
+  private Long idPermiso;
 
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
     UsuarioPermisoId that = (UsuarioPermisoId) o;
-    return Objects.equals(id_usuario, that.id_usuario) &&
-            Objects.equals(id_permiso, that.id_permiso);
+    return Objects.equals(idUsuario, that.idUsuario) &&
+            Objects.equals(idPermiso, that.idPermiso);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id_usuario, id_permiso);
+    return Objects.hash(idUsuario, idPermiso);
   }
 }

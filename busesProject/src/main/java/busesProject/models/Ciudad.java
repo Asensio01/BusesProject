@@ -17,9 +17,11 @@ public class Ciudad {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "id_ciudad")
-  private Integer idCiudad;
+  private Long idCiudad;
+
   @Column(nullable = false, length = 100)
   private String nombre;
+
   @Enumerated(EnumType.STRING)
   @Column(nullable = false)
   private Departamento departamento;

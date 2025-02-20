@@ -1,6 +1,5 @@
 package busesProject.models;
 
-
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -13,13 +12,14 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-
 public class AutobusCaracteristica {
   @EmbeddedId
   private AutobusCaracteristicaId id;
+
   @ManyToOne
   @MapsId("idAutobus")
   private Autobus autobus;
+
   @ManyToOne
   @MapsId("idCaracteristica")
   private CaracteristicaBus caracteristicaBus;

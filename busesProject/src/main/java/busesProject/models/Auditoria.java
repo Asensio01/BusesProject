@@ -21,7 +21,7 @@ public class Auditoria {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_auditoria")
-    private Integer idAuditoria;
+    private Long idAuditoria;
 
     @ManyToOne
     @JoinColumn(name = "id_usuario", nullable = false)
@@ -32,7 +32,7 @@ public class Auditoria {
     private TablaModificada tabla_modificada;
 
     @Column(name = "id_registro",nullable = false)
-    private Integer idRegistro;
+    private Long idRegistro;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
