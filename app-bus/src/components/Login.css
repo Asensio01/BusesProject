@@ -1,0 +1,209 @@
+body {
+  color: #243774;
+  font-weight: 500;
+}
+
+
+
+.input-group {
+  display: flex;
+  align-items: center;
+}
+
+.input-group input {
+  margin-left: 10px;
+  flex: 1;
+}
+
+.filabtn {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  gap: 1vw; /* Ajuste del espacio entre botones */
+  margin-top: 3vh;
+  margin-bottom: 3vh;
+}
+
+.cuerpoOut {
+  display: flex;
+  width: 100vw;
+  height: 100vh;
+  background-color: #b1bee0;
+  font-size: 1.3rem;
+}
+
+
+
+.cuerpoIn {
+  width: 50%;
+  background-color: #b1bee0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.welcome-section {
+  width: 50%;
+  border-top-left-radius: 80px;
+  border-bottom-left-radius: 80px;
+  background-color: #5c6aa8; /* Ajustado para que coincida con el diseño */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  text-align: center;
+  padding: 20px;
+}
+
+.RegInput{
+  width: 150%;
+  height: 6vh;
+  border: none;
+  border-radius: 20px;
+  text-align: center;
+  font-size: 16px;
+  outline: none;
+  margin: 10px 0;
+}
+
+
+
+
+.welcome-section h2 {
+  font-size: 1.8rem;
+  font-weight: bold;
+
+}
+
+
+.bold-text {
+  font-weight:100;
+  font-size: 1rem;
+}
+
+.register-btn  {
+  margin-top: 3vh;
+  background-color: #e7ba45;
+  color: #243774;
+  font-weight: bold;
+  width: 40%;
+  height: 7vh;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  border: none; /* Asegura que no tenga borde */
+  outline: none; /* Evita que tenga un borde al hacer clic */
+}
+
+.register-btn:hover {
+  background-color: white;
+  color: #e7ba45;
+}
+
+/* Botones redondos */
+.round-button {
+  width: 50px;
+  height: 50px;
+  border: none;
+  border-radius: 50%;
+  background-color: #243774;
+  color: white;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.round-button:hover {
+  background-color: white;
+  color: #243774;
+}
+
+/* Estilo del formulario */
+.cuerpoIn form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.cuerpoIn form h2{
+  font-size: 1.8rem;
+  font-weight: bold;
+}
+
+
+.cuerpoIn form input {
+  width: 80%;
+  height: 6vh;
+  border: none;
+  border-radius: 20px;
+  text-align: center;
+  font-size: 16px;
+  outline: none;
+  background-color: #f0f0f0;
+  margin: 10px 0;
+}
+
+.ingresarBtn {
+  margin-top: 3vh;
+  background-color: #243774;
+  color: white;
+  font-weight: bold;
+  width: 100%;
+  height: 7vh;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  border: none; /* Asegura que no tenga borde */
+  outline: none; /* Evita que tenga un borde al hacer clic */
+}
+
+.ingresarBtn:hover {
+  background-color: white;
+  color: #243774;
+  border: none; /* Evita que aparezca un borde */
+  outline: none;
+}
+
+/* Estilo para el pop-up de error */
+.error-popup {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: rgb(255, 0, 0);
+  color: white;
+  padding: 10px 20px;
+  border-radius: 10px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+  animation: fadeIn 0.5s ease-in-out, fadeOut 0.5s ease-in-out 2.5s forwards;
+}
+
+/* Animación de entrada */
+@keyframes fadeIn {
+  from {
+      opacity: 0;
+      transform: translateX(-50%) translateY(-10px);
+  }
+  to {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+  }
+}
+
+/* Animación de salida */
+@keyframes fadeOut {
+  from {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+  }
+  to {
+      opacity: 0;
+      transform: translateX(-50%) translateY(-10px);
+  }
+}
