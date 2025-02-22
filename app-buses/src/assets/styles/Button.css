@@ -1,0 +1,25 @@
+.button {
+  width: 170px;
+  height: 45px;
+  font-size: 14px;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 10px;
+  transition: opacity 0.3s ease;
+}
+
+.button.solid {
+  background-color: #3AB397;
+  color: white;
+  border: none;
+}
+
+.button.outline {
+  background-color: transparent;
+  color: white;
+  border: 2px solid white;
+}
+
+.button:hover {
+  opacity: 0.9;
+}
