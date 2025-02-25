@@ -8,6 +8,9 @@ import "./App.css";
 import PropTypes from "prop-types";
 import Login from "./pages/Login";
 import Home from "./pages/Home";
+import MenuAdmin from "./pages/MenuAdmin";
+import Roles from "./pages/Roles";
+
 import { useAuth, AuthProvider } from "./Context/AuthContext";
 
 function ProtectedRoute({ children }) {
@@ -30,6 +33,9 @@ function App() {
                 </ProtectedRoute>
               }
             />
+            <Route path="/MenuAdmin" element={<MenuAdmin />} />
+            <Route path="/Roles" element={<Roles />} />
+
             <Route path="*" element={<Navigate to="/login" />} />
           </Routes>
         </Router>
