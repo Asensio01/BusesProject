@@ -1,5 +1,13 @@
 .verify-code-form {
-  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 15px;
+  padding: 15px;
+  background-color: #a642f8;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgb(241, 87, 255);
 }
 
 .code-inputs {
@@ -17,12 +25,6 @@
   border-radius: 5px;
   outline: none;
   transition: 0.2s;
-}
-
-.verify-code-form button{
-  margin-top: 15px;
-  background-color: #E7BA45;
-  color: black;
 }
 
 .code-inputs input:focus {

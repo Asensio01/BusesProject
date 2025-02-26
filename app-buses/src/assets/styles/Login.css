@@ -43,7 +43,13 @@ body {
   width: 100%;
   overflow: hidden;
 }
-
+.container-form-verify
+{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
 .container-form form {
   height: 100%;
   display: flex;

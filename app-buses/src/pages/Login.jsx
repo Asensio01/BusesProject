@@ -12,7 +12,8 @@ import "../assets/styles/Login.css";
 function Login() {
   const [isSignUp, setIsSignUp] = useState(false);
   const [errors, setErrors] = useState({});
-  const [isVerifying, setIsVerifying] = useState(true);
+  const [isVerifying, setIsVerifying] = useState(false);
+  const [userEmail, setUserEmail] = useState("");
 
   const handleToggle = () => {
     setIsSignUp(!isSignUp);
@@ -79,16 +80,18 @@ function Login() {
 
       console.log("Registro exitoso");
       setErrors({});
+      setUserEmail(data.email);
+      setIsVerifying(true);
     } catch (error) {
       console.error("Error en el registro:", error.message);
     }
   };
 
-  const handleVerify = async (code) => {
-    const response = await fetch("http://localhost:8080/auth/verify-code", {
+  const handleVerify = async({email, verificationCode}) => {
+    const response = await fetch("http://localhost:8080/auth/verify", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ code }),
+      body: JSON.stringify({ email, verificationCode }),
     });
 
     const data = await response.json();
@@ -148,6 +151,14 @@ function Login() {
     },
     {
       component: Input,
+      icon: svgUser,
+      type: "text",
+      name: "username",
+      placeholder: "Usuario",
+      required: true,
+    },
+    {
+      component: Input,
       icon: svgMail,
       type: "email",
       name: "email",
@@ -175,8 +186,8 @@ function Login() {
   return (
     <div className={`container-Login ${isSignUp ? "toggle" : ""}`}>
       {isVerifying ? (
-        <div className="container-form">
-          <VerifyCodeForm onVerify={handleVerify} />
+        <div className="container-form-verify">
+          <VerifyCodeForm onVerify={handleVerify} email={userEmail} />
         </div>
       ) : (
         <>

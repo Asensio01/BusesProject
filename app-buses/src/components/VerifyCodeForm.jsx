@@ -1,12 +1,16 @@
 import { useState, useRef } from "react";
 import PropTypes from "prop-types";
+import Button from "./Button";
 import "../assets/styles/VerifyCodeForm.css"; // Agrega estilos según necesites
 
-function VerifyCodeForm({ onVerify }) {
+function VerifyCodeForm({ onVerify, email }) {
   const [code, setCode] = useState(["", "", "", "", "", ""]);
   const inputsRef = useRef([]);
 
-
+  const StyleVerifyBtn = {
+    backgroundColor: "#E7BA45",
+    color: "black",
+  };
 
   const handleChange = (index, value) => {
     if (!/^\d?$/.test(value)) return; // Solo permitir un dígito numérico
@@ -36,8 +40,11 @@ function VerifyCodeForm({ onVerify }) {
       alert("El código debe tener 6 dígitos.");
       return;
     }
-
-    onVerify(fullCode);
+    const requestBody = {
+      email: email,
+      verificationCode: fullCode,
+    };
+    onVerify(requestBody);
   };
 
   return (
@@ -50,6 +57,7 @@ function VerifyCodeForm({ onVerify }) {
           <input
             key={index}
             ref={(el) => (inputsRef.current[index] = el)}
+            name="verificationCode"
             type="text"
             maxLength="1"
             value={digit}
@@ -58,13 +66,18 @@ function VerifyCodeForm({ onVerify }) {
           />
         ))}
       </div>
-      <button type="submit">Verificar Código</button>
+      <Button
+        type="submit"
+        styleButton={StyleVerifyBtn}
+        text={"Verificar Código"}
+      ></Button>
     </form>
   );
 }
 
 VerifyCodeForm.propTypes = {
   onVerify: PropTypes.func.isRequired,
+  email: PropTypes.string,
 };
 
 export default VerifyCodeForm;
