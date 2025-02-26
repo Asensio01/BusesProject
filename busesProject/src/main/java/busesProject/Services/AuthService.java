@@ -36,6 +36,14 @@ public class AuthService {
     }
 
     public Usuario signup(UserRegister input) {
+        if (userRepository.findByEmail(input.getEmail()).isPresent()) {
+            throw new RuntimeException("Error: El correo electrónico ya está registrado.");
+        }
+
+        if (userRepository.findByUsername(input.getUsername()).isPresent()) {
+            throw new RuntimeException("Error: El nombre de usuario ya está en uso.");
+        }
+
         Usuario user = new Usuario(
                 input.getNombre(),
                 input.getApellido(),
@@ -55,22 +63,21 @@ public class AuthService {
         return userRepository.save(user);
     }
 
-
     public Usuario authenticate(UserLogin input) {
         Usuario user = userRepository.findByEmail(input.getEmail())
-                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+                .orElseThrow(() -> new UsernameNotFoundException("Error: Usuario no encontrado."));
 
         if (!user.isEnabled()) {
-            throw new RuntimeException("Account not verified. Please verify your account.");
+            throw new RuntimeException("Error: Cuenta no verificada. Por favor, revisa tu correo electrónico.");
         }
 
-        // 💡 Comparar manualmente la contraseña usando PasswordEncoder
         if (!passwordEncoder.matches(input.getPassword(), user.getPassword())) {
-            throw new BadCredentialsException("Invalid credentials");
+            throw new BadCredentialsException("Error: Credenciales inválidas. Verifica tu correo y contraseña.");
         }
 
         return user;
     }
+
 
 
     public void verifyUser(VerifyUserDto input) {
