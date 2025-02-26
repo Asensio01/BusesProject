@@ -1,5 +1,13 @@
 @import url('https://fonts.googleapis.com/css2?family=Fuzzy+Bubbles:wght@400;700&display=swap');
 
+html,
+body {
+  width: 100%;
+  min-height: 100vh;
+  overflow-x: hidden;
+  /* Evita el scroll horizontal */
+}
+
 * {
   margin: 0;
   padding: 0;
@@ -14,12 +22,14 @@ body {
   justify-content: center;
   align-items: center;
   background-color: #b1bee0;
+  overflow-x: hidden;
 }
 
 /* Contenedor principal del login */
 .container-Login {
   width: 1200px;
   height: 800px;
+  overflow: hidden;
   display: flex;
   position: relative;
   background-color: #b9a8e7;
@@ -146,7 +156,9 @@ body {
 @media screen and (max-width: 915px) {
   .container-Login {
     width: 95vw;
+    max-width: 100%;
     height: 60vh;
+    max-height: 100%;
   }
 
   .container-form {
@@ -172,7 +184,7 @@ body {
   }
 
   .button {
-    font-size: 10px;
+    font-size: 14px;
   }
 
   .welcome-title {

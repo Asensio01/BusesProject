@@ -14,8 +14,6 @@ public class UserLogin {
     public String getNombre() {
         return nombre;
     }
-
-
     public String getPassword() {
         return password;
     }

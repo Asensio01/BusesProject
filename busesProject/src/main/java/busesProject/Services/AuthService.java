@@ -35,8 +35,8 @@ public class AuthService {
     }
 
     public void registerUser(UserRegister newUserDto) {
-        if (userService.existsByUserName(newUserDto.getNombre())) {
-            throw new IllegalArgumentException("El nombre de usuario ya existe");
+        if (userService.existsByEmail(newUserDto.getEmail())) {
+            throw new IllegalArgumentException("El correo del usuario ya existe");
         }
 
         // Verifica que la contraseña no sea nula

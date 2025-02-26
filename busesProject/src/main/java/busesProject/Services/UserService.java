@@ -21,8 +21,8 @@ public class UserService implements UserDetailsService {
                 .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado"));
     }
 
-    public boolean existsByUserName(String username) {
-        return usuarioRepository.existsByNombre(username);
+    public boolean existsByEmail(String email) {
+        return usuarioRepository.existsByEmail(email);
     }
 
     public void save(Usuario usuario) {
