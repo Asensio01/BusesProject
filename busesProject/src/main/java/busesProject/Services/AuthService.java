@@ -1,60 +1,140 @@
 package busesProject.Services;
-
+import busesProject.dtos.UserLogin;
 import busesProject.dtos.UserRegister;
-import busesProject.jwt.JwtUtil;
+import busesProject.dtos.VerifyUserDto;
 import busesProject.models.Usuario;
-import org.springframework.beans.factory.annotation.Autowired;
+import busesProject.repositories.UsuarioRepository;
+import jakarta.mail.MessagingException;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.util.Optional;
+import java.util.Random;
+
 @Service
 public class AuthService {
-
-    private final UserService userService;
+    private final UsuarioRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private final JwtUtil jwtUtil;
     private final AuthenticationManager authenticationManager;
+    private final EmailService emailService;
 
-    @Autowired
-    public AuthService(UserService userService, PasswordEncoder passwordEncoder, JwtUtil jwtUtil, AuthenticationManager authenticationManager) {
-        this.userService = userService;
-        this.passwordEncoder = passwordEncoder;
-        this.jwtUtil = jwtUtil;
+    public AuthService(
+            UsuarioRepository userRepository,
+            AuthenticationManager authenticationManager,
+            PasswordEncoder passwordEncoder,
+            EmailService emailService
+    ) {
         this.authenticationManager = authenticationManager;
+        this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
+        this.emailService = emailService;
     }
 
-    public String authenticate(String username, String password) {
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(username, password)
+    public Usuario signup(UserRegister input) {
+        Usuario user = new Usuario(
+                input.getNombre(),
+                input.getApellido(),
+                input.getEmail(),
+                passwordEncoder.encode(input.getPassword()),
+                input.getTelefono(),
+                input.getRol(),
+                input.getUsername()
         );
 
-        return jwtUtil.generateToken(authentication);
-    }
+        user.setVerificationCode(generateVerificationCode());
+        user.setVerificationExpiration(LocalDateTime.now().plusMinutes(15));
+        user.setEnabled(false);
 
-    public void registerUser(UserRegister newUserDto) {
-        if (userService.existsByEmail(newUserDto.getEmail())) {
-            throw new IllegalArgumentException("El correo del usuario ya existe");
-        }
+        sendVerificationEmail(user);
 
-        // Verifica que la contraseña no sea nula
-        if (newUserDto.getPassword() == null || newUserDto.getPassword().isEmpty()) {
-            throw new IllegalArgumentException("La contraseña no puede estar vacía");
-        }
-
-        Usuario usuario = new Usuario(
-                newUserDto.getNombre(),
-                newUserDto.getApellido(),
-                newUserDto.getEmail(),
-                passwordEncoder.encode(newUserDto.getPassword()),
-                newUserDto.getTelefono(),
-                newUserDto.getRol()
-        );
-
-        userService.save(usuario);
+        return userRepository.save(user);
     }
 
 
+    public Usuario authenticate(UserLogin input) {
+        Usuario user = userRepository.findByEmail(input.getEmail())
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
+        if (!user.isEnabled()) {
+            throw new RuntimeException("Account not verified. Please verify your account.");
+        }
+
+        // 💡 Comparar manualmente la contraseña usando PasswordEncoder
+        if (!passwordEncoder.matches(input.getPassword(), user.getPassword())) {
+            throw new BadCredentialsException("Invalid credentials");
+        }
+
+        return user;
+    }
+
+
+    public void verifyUser(VerifyUserDto input) {
+        Optional<Usuario> optionalUser = userRepository.findByEmail(input.getEmail());
+        if (optionalUser.isPresent()) {
+            Usuario user = optionalUser.get();
+            if (user.getVerificationExpiration().isBefore(LocalDateTime.now())) {
+                throw new RuntimeException("Verification code has expired");
+            }
+            if (user.getVerificationCode().equals(input.getVerificationCode())) {
+                user.setEnabled(true);
+                user.setVerificationCode(null);
+                user.setVerificationExpiration(null);
+                userRepository.save(user);
+            } else {
+                throw new RuntimeException("Invalid verification code");
+            }
+        } else {
+            throw new RuntimeException("User not found");
+        }
+    }
+
+    public void resendVerificationCode(String email) {
+        Optional<Usuario> optionalUser = userRepository.findByEmail(email);
+        if (optionalUser.isPresent()) {
+            Usuario user = optionalUser.get();
+            if (user.isEnabled()) {
+                throw new RuntimeException("Account is already verified");
+            }
+            user.setVerificationCode(generateVerificationCode());
+            user.setVerificationExpiration(LocalDateTime.now().plusHours(1));
+            sendVerificationEmail(user);
+            userRepository.save(user);
+        } else {
+            throw new RuntimeException("User not found");
+        }
+    }
+
+    private void sendVerificationEmail(Usuario user) { //TODO: Update with company logo
+        String subject = "Verificación de cuenta";
+        String verificationCode = "Codigo de Verificación  " + user.getVerificationCode();
+        String htmlMessage = "<html>"
+                + "<body style=\"font-family: Arial, sans-serif;\">"
+                + "<div style=\"background-color: #f5f5f5; padding: 20px;\">"
+                + "<h2 style=\"color: #333;\">Bienvenido a Buses App!</h2>"
+                + "<p style=\"font-size: 16px;\">Por favor ingrese el código de verificación a continuación para continuar:</p>"
+                + "<div style=\"background-color: #fff; padding: 20px; border-radius: 5px; box-shadow: 0 0 10px rgba(0,0,0,0.1);\">"
+                + "<h3 style=\"color: #333;\">Verification Code:</h3>"
+                + "<p style=\"font-size: 18px; font-weight: bold; color: #007bff;\">" + verificationCode + "</p>"
+                + "</div>"
+                + "</div>"
+                + "</body>"
+                + "</html>";
+
+        try {
+            emailService.sendVerificationEmail(user.getEmail(), subject, htmlMessage);
+        } catch (MessagingException e) {
+            // Handle email sending exception
+            e.printStackTrace();
+        }
+    }
+    private String generateVerificationCode() {
+        Random random = new Random();
+        int code = random.nextInt(900000) + 100000;
+        return String.valueOf(code);
+    }
 }

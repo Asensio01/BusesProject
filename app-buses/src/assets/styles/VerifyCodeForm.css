@@ -1,0 +1,31 @@
+.verify-code-form {
+  text-align: center;
+}
+
+.code-inputs {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+.code-inputs input {
+  width: 40px;
+  height: 40px;
+  text-align: center;
+  font-size: 1.5rem;
+  border: 2px solid #243774;
+  border-radius: 5px;
+  outline: none;
+  transition: 0.2s;
+}
+
+.verify-code-form button{
+  margin-top: 15px;
+  background-color: #E7BA45;
+  color: black;
+}
+
+.code-inputs input:focus {
+  border-color: #E7BA45;
+  box-shadow: 0 0 5px rgba(231, 186, 69, 0.5);
+}

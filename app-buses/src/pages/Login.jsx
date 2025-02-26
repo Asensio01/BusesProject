@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Form } from "../components/Form";
 import { Input } from "../components/Input";
+import VerifyCodeForm from "../components/VerifyCodeForm";
 import svgMail from "../assets/imgSvg/mail.svg";
 import svgLock from "../assets/imgSvg/lock.svg";
 import svgUser from "../assets/imgSvg/userProfile.svg";
@@ -11,6 +12,7 @@ import "../assets/styles/Login.css";
 function Login() {
   const [isSignUp, setIsSignUp] = useState(false);
   const [errors, setErrors] = useState({});
+  const [isVerifying, setIsVerifying] = useState(true);
 
   const handleToggle = () => {
     setIsSignUp(!isSignUp);
@@ -21,9 +23,7 @@ function Login() {
     console.log("Formulario enviado");
   };
 
-
   const handleRegister = async (data) => {
-
     let validationErrors = {};
 
     // Validar email
@@ -32,9 +32,9 @@ function Login() {
     }
 
     // Validar teléfono (máximo 10 caracteres)
-    if (data.telefono.length > 10) {
+    if (!/^\d{4}-\d{4}$/.test(data.telefono)) {
       validationErrors.telefono =
-        "El teléfono no puede tener más de 10 dígitos.";
+        "El teléfono debe tener el formato 1234-5678.";
     }
 
     // Validar contraseña
@@ -60,7 +60,7 @@ function Login() {
       setErrors(validationErrors);
       return;
     }
-
+    setErrors({});
     try {
       const response = await fetch("http://localhost:8080/auth/register", {
         method: "POST",
@@ -84,7 +84,22 @@ function Login() {
     }
   };
 
+  const handleVerify = async (code) => {
+    const response = await fetch("http://localhost:8080/auth/verify-code", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ code }),
+    });
 
+    const data = await response.json();
+
+    if (response.ok) {
+      console.log("Código validado. Usuario autenticado.");
+      setIsVerifying(false);
+    } else {
+      console.error("Código incorrecto:", data.message);
+    }
+  };
   const StyleWelcomeBtn = {
     backgroundColor: "#E7BA45",
     color: "#243774",
@@ -120,7 +135,7 @@ function Login() {
       icon: svgUser,
       type: "text",
       name: "nombre",
-      placeholder: "Ingrese su nombre",
+      placeholder: "Nombre",
       required: true,
     },
     {
@@ -128,7 +143,7 @@ function Login() {
       icon: svgUser,
       type: "text",
       name: "apellido",
-      placeholder: "Ingrese su apellido",
+      placeholder: "Apellido",
       required: true,
     },
     {
@@ -159,56 +174,64 @@ function Login() {
 
   return (
     <div className={`container-Login ${isSignUp ? "toggle" : ""}`}>
-      <div className="container-form">
-        <Form
-          title="Iniciar Sesión"
-          subtitle="Use su correo y contraseña"
-          inputs={inputSignIn}
-          buttonText="INICIAR SESIÓN"
-          onSubmit={handleSubmit}
-          methodName={"POST"}
-          classForm={"sign-in"}
-          styleButton={StyleFormBtn}
-          textA={"¿Olvidó su contraseña?"}
-        />
-      </div>
+      {isVerifying ? (
+        <div className="container-form">
+          <VerifyCodeForm onVerify={handleVerify} />
+        </div>
+      ) : (
+        <>
+          <div className="container-form">
+            <Form
+              title="Iniciar Sesión"
+              subtitle="Use su correo y contraseña"
+              inputs={inputSignIn}
+              buttonText="INICIAR SESIÓN"
+              onSubmit={handleSubmit}
+              methodName={"POST"}
+              classForm={"sign-in"}
+              styleButton={StyleFormBtn}
+              textA={"¿Olvidó su contraseña?"}
+            />
+          </div>
 
-      <div className="container-form">
-        <Form
-          title="Registrarse"
-          subtitle="Llene todos los campos"
-          inputs={inputSignUp}
-          buttonText="REGISTRARSE"
-          onSubmit={handleRegister}
-          classForm={"sign-up"}
-          styleButton={StyleFormBtn}
-          errors={errors}
-        />
-      </div>
+          <div className="container-form">
+            <Form
+              title="Registrarse"
+              subtitle="Llene todos los campos"
+              inputs={inputSignUp}
+              buttonText="REGISTRARSE"
+              onSubmit={handleRegister}
+              classForm={"sign-up"}
+              styleButton={StyleFormBtn}
+              errors={errors}
+            />
+          </div>
 
-      <div className="container-welcome">
-        <Welcome
-          className="welcome-sign-up welcome"
-          title={"¡Bienvenido!"}
-          text={
-            "Ingrese sus datos personales para usar todas las funciones del sitio"
-          }
-          buttonText={"Registrarse"}
-          onSwitch={handleToggle}
-          styleButton={StyleWelcomeBtn}
-        />
+          <div className="container-welcome">
+            <Welcome
+              className="welcome-sign-up welcome"
+              title={"¡Bienvenido!"}
+              text={
+                "Ingrese sus datos personales para usar todas las funciones del sitio"
+              }
+              buttonText={"Registrarse"}
+              onSwitch={handleToggle}
+              styleButton={StyleWelcomeBtn}
+            />
 
-        <Welcome
-          className="welcome-sign-in welcome"
-          title={"¡Hola!"}
-          text={
-            "Regístrese con sus datos personales para usar todas las funciones del sitio"
-          }
-          buttonText={"Iniciar Sesión"}
-          onSwitch={handleToggle}
-          styleButton={StyleWelcomeBtn}
-        />
-      </div>
+            <Welcome
+              className="welcome-sign-in welcome"
+              title={"¡Hola!"}
+              text={
+                "Regístrese con sus datos personales para usar todas las funciones del sitio"
+              }
+              buttonText={"Iniciar Sesión"}
+              onSwitch={handleToggle}
+              styleButton={StyleWelcomeBtn}
+            />
+          </div>
+        </>
+      )}
     </div>
   );
 }
