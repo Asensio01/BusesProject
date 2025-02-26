@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { useAuth } from "../Context/AuthContext";
+import { useNavigate } from "react-router-dom";
 import { Form } from "../components/Form";
 import { Input } from "../components/Input";
 import VerifyCodeForm from "../components/VerifyCodeForm";
@@ -14,14 +16,42 @@ function Login() {
   const [errors, setErrors] = useState({});
   const [isVerifying, setIsVerifying] = useState(false);
   const [userEmail, setUserEmail] = useState("");
+  const { login } = useAuth();
+  const navigate = useNavigate();
+  const [formData, setFormData] = useState({ email: "", password: "" });
+  const [error, setError] = useState(null);
+  const handleChange = (e) => {
+    setFormData((prevState) => ({
+      ...prevState,
+      [e.target.name]: e.target.value,
+    }));
+  };
 
   const handleToggle = () => {
     setIsSignUp(!isSignUp);
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log("Formulario enviado");
+  const handleSubmit = async () => {
+    console.log({formData})
+    try {
+      const response = await fetch("http://localhost:8080/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        login(data.token); // Guardar token en contexto y localStorage
+        navigate("/home"); // Redirigir al home
+      } else {
+        setError(data.message || "Error en el inicio de sesión");
+      }
+    } catch (error) {
+      console.error("Error en el login:", error);
+      setError("Error al conectar con el servidor");
+    }
   };
 
   const handleRegister = async (data) => {
@@ -87,7 +117,8 @@ function Login() {
     }
   };
 
-  const handleVerify = async({email, verificationCode}) => {
+  const handleVerify = async ({ email, verificationCode }) => {
+    console.log(JSON.stringify(email, verificationCode));
     const response = await fetch("http://localhost:8080/auth/verify", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -192,6 +223,7 @@ function Login() {
       ) : (
         <>
           <div className="container-form">
+            {error && <p style={{ color: "red" }}>{error}</p>}
             <Form
               title="Iniciar Sesión"
               subtitle="Use su correo y contraseña"
@@ -202,6 +234,7 @@ function Login() {
               classForm={"sign-in"}
               styleButton={StyleFormBtn}
               textA={"¿Olvidó su contraseña?"}
+              detectChange={handleChange}
             />
           </div>
 

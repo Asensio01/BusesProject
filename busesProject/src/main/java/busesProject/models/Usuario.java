@@ -24,7 +24,7 @@ public class Usuario implements UserDetails {
     private int idUsuario;
 
     @NotBlank
-    @Column(unique = true, nullable = false, length = 50)
+    @Column(nullable = false, length = 50)
     private String nombre;
 
     @Column(nullable = false, length = 50)

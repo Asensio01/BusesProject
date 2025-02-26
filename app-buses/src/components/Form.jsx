@@ -13,6 +13,7 @@ export function Form({
   styleButton,
   textA,
   errors,
+  detectChange=""
 }) {
   const initialFormState = inputs.reduce((acc, input) => {
     acc[input.name] = "";
@@ -21,13 +22,18 @@ export function Form({
 
   const [formData, setFormData] = useState(initialFormState);
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
+  if (detectChange === "") {
+    
+    const handleChange = (e) => {
+      const { name, value } = e.target;
+      setFormData((prev) => ({
+        ...prev,
+        [name]: value,
+      }));
+    };
+
+    detectChange = handleChange;
+  }
 
   return (
     <form
@@ -51,7 +57,7 @@ export function Form({
                 placeholder={input.placeholder}
                 required={input.required}
                 value={formData[input.name] || ""}
-                detect={handleChange}
+                detect={detectChange}
               />
               {errors?.[input.name] && (
                 <p className="floating-error">{errors[input.name]}</p>
@@ -84,4 +90,5 @@ Form.propTypes = {
   onSubmit: PropTypes.func,
   textA: PropTypes.string,
   errors: PropTypes.string,
+  detectChange: PropTypes.func
 };
