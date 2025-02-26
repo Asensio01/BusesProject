@@ -1,55 +1,60 @@
 package busesProject.controllers;
 
+
+import busesProject.Responses.LoginResponse;
 import busesProject.Services.AuthService;
+import busesProject.Services.JwtService;
 import busesProject.dtos.UserLogin;
 import busesProject.dtos.UserRegister;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
+import busesProject.dtos.VerifyUserDto;
+import busesProject.models.Usuario;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
-
-@RestController
 @RequestMapping("/auth")
+@RestController
 public class AuthController {
+    private final JwtService jwtService;
 
-    private final AuthService authService;
+    private final AuthService authenticationService;
 
-    @Autowired
-    public AuthController(AuthService authService) {
-        this.authService = authService;
+    public AuthController(JwtService jwtService, AuthService authenticationService) {
+        this.jwtService = jwtService;
+        this.authenticationService = authenticationService;
+    }
+
+    @PostMapping(value = "/register", produces = "application/json")
+    public ResponseEntity<Usuario> register(@RequestBody UserRegister registerUserDto) {
+        Usuario registeredUser = authenticationService.signup(registerUserDto);
+        return ResponseEntity.ok(registeredUser);
     }
 
     @PostMapping("/login")
-    public ResponseEntity<String> login(@Valid @RequestBody UserLogin loginUserDto, BindingResult bindingResult){
-        if (bindingResult.hasErrors()){
-            return ResponseEntity.badRequest().body("Revise sus credenciales");
-        }
+    public ResponseEntity<LoginResponse> authenticate(@RequestBody UserLogin loginUserDto){
+        Usuario authenticatedUser = authenticationService.authenticate(loginUserDto);
+        String jwtToken = jwtService.generateToken(authenticatedUser);
+        LoginResponse loginResponse = new LoginResponse(jwtToken, jwtService.getExpirationTime());
+        return ResponseEntity.ok(loginResponse);
+    }
+
+    @PostMapping("/verify")
+    public ResponseEntity<?> verifyUser(@RequestBody VerifyUserDto verifyUserDto) {
         try {
-            String jwt = authService.authenticate(loginUserDto.getNombre(), loginUserDto.getPassword());
-            return ResponseEntity.ok(jwt);
-        } catch (Exception e){
-            return ResponseEntity.badRequest().body(e.getMessage());
+            authenticationService.verifyUser(verifyUserDto);
+            return ResponseEntity.ok("{\"message\": \"Account verified successfully\"}");
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body("{\"error\": \"" + e.getMessage() + "\"}");
         }
     }
 
-    @PostMapping("/register")
-    public ResponseEntity<String> register(@Valid @RequestBody UserRegister newUserDto, BindingResult bindingResult){
-        if (bindingResult.hasErrors()){
-            return ResponseEntity.badRequest().body("Revise los campos");
-        }
+    @PostMapping("/resend")
+    public ResponseEntity<?> resendVerificationCode(@RequestParam String email) {
         try {
-            authService.registerUser(newUserDto);
-            return ResponseEntity.status(HttpStatus.CREATED).body("Registrado");
-        } catch (IllegalArgumentException e){
-            return ResponseEntity.badRequest().body(e.getMessage());
+            authenticationService.resendVerificationCode(email);
+            return ResponseEntity.ok("{\"message\": \"Verification code sent\"}");
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body("{\"error\": \"" + e.getMessage() + "\"}");
         }
     }
 
-    @GetMapping("/check-auth")
-    public ResponseEntity<String> checkAuth(){
-        return ResponseEntity.ok().body("Autenticado");
-    }
 }
