@@ -72,4 +72,25 @@ public class AuthController {
         }
     }
 
+    @PostMapping("/forgot-password")
+    public ResponseEntity<?> forgotPassword(@RequestParam String email) {
+        try {
+            authenticationService.sendPasswordResetEmail(email);
+            return ResponseEntity.ok("{\"message\": \"Se ha enviado un correo con instrucciones para restablecer la contraseña.\"}");
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body("{\"error\": \"" + e.getMessage() + "\"}");
+        }
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<?> resetPassword(@RequestParam String token, @RequestParam String newPassword) {
+        try {
+            authenticationService.resetPassword(token, newPassword);
+            return ResponseEntity.ok("{\"message\": \"Contraseña restablecida con éxito.\"}");
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body("{\"error\": \"" + e.getMessage() + "\"}");
+        }
+    }
+
+
 }
