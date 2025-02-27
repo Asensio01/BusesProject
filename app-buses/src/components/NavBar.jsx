@@ -1,34 +1,40 @@
 import { useState } from "react";
-import "../assets/styles/Menu.css";
+import PropTypes from "prop-types";
+import { NavLink } from "react-router-dom";
+import "../assets/styles/NavBar.css";
 
-function Navbar() {
+function Navbar({ links }) {
   const [isOpen, setIsOpen] = useState(false);
 
-  const toggleMenu = () => {
-    setIsOpen(!isOpen);
-  };
-
   return (
-    <nav className="NavBarMenu">
-      <div className="menu-container">
-        <button className="menu-toggle" onClick={toggleMenu}>
-          ☰
-        </button>
+    <nav className="navbar-container">
+      {/* Botón hamburguesa para móvil */}
+      <button className="menu-toggle" onClick={() => setIsOpen(!isOpen)}>
+        ☰
+      </button>
 
-        <ul className={`menu-items ${isOpen ? "open" : ""}`}>
-          <li>
-            <a href="#roles">Asignación de Roles</a>
+      {/* Lista de enlaces */}
+      <ul className={`navbar-links ${isOpen ? "open" : ""}`}>
+        {links.map((link, index) => (
+          <li key={index} className="nav-item">
+            {/* Usamos rutas absolutas para evitar concatenaciones */}
+            <NavLink className="nav-link" to={`/MenuAdmin/${link.path}`} end>
+              {link.label}
+            </NavLink>
           </li>
-          <li>
-            <a href="#rutas">Creación de Rutas</a>
-          </li>
-          <li>
-            <a href="#">Perfil</a>
-          </li>
-        </ul>
-      </div>
+        ))}
+      </ul>
     </nav>
   );
 }
+
+Navbar.propTypes = {
+  links: PropTypes.arrayOf(
+    PropTypes.shape({
+      label: PropTypes.string.isRequired,
+      path: PropTypes.string.isRequired,
+    })
+  ).isRequired,
+};
 
 export default Navbar;

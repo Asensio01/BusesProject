@@ -55,8 +55,9 @@ function Login() {
       const data = await response.json();
 
       if (response.ok) {
-        login(data.token); // Guardar token en contexto y localStorage
-        navigate("/home"); // Redirigir al home
+        localStorage.setItem("token", data.token); // ✅ Guardar token en localStorage
+        login(data.token); // ✅ Llamar a la función del contexto de autenticación
+        navigate("/home"); // ✅ Redirigir al home
       } else {
         setError(data.message || "Error en el inicio de sesión");
       }
@@ -65,6 +66,7 @@ function Login() {
       setError("Error al conectar con el servidor");
     }
   };
+
 
   const handleRegister = async (data) => {
     let validationErrors = {};

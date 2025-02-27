@@ -1,5 +1,4 @@
-import React from "react";
-import "../assets/styles/Menu.css"; // Importa el archivo CSS
+import "../assets/styles/NavBar.css"; // Importa el archivo CSS
 import Navbar from "../components/NavBar"; // Importa el componente Navbar
 
 function Roles() {

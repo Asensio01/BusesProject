@@ -1,15 +1,28 @@
-import React from "react";
-import Navbar from "../components/NavBar"; // Importa el componente Navbar
-import "../assets/styles/Menu.css"; // Asegúrate de que el archivo CSS tenga la extensión correcta
+import { Routes, Route, Navigate } from "react-router-dom";
+import Navbar from "../components/NavBar";
+import "../assets/styles/MenuAdmin.css";
+import CrearRutas from "./CrearRutas";
+import AscenderUsuarios from "./AscenderUsuarios";
 
 function MenuAdmin() {
   return (
-    <div className="new-pageMenu">
-      <Navbar /> {/* Usa el componente Navbar */}
-      <div className="content-Menu">
-        <br />
-        <h1>Bienvenido de nuevo</h1> <br />
-        <p>This is the admin menu page where you can manage your application.</p>
+    <div className="admin-container">
+      {/* Navbar con links internos */}
+      <Navbar
+        links={[
+          { label: "Crear Rutas", path: "crear-rutas" },
+          { label: "Ascender Usuarios", path: "ascender-usuarios" },
+        ]}
+      />
+
+      {/* Contenido dinámico basado en la opción seleccionada */}
+      <div className="admin-content">
+        <Routes>
+          {/* Redirigir a "Crear Rutas" si se entra a /MenuAdmin directamente */}
+          <Route path="/" element={<Navigate to="crear-rutas" />} />
+          <Route path="crear-rutas" element={<CrearRutas />} />
+          <Route path="ascender-usuarios" element={<AscenderUsuarios />} />
+        </Routes>
       </div>
     </div>
   );
