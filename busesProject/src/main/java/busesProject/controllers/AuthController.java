@@ -7,9 +7,13 @@ import busesProject.Services.JwtService;
 import busesProject.dtos.UserLogin;
 import busesProject.dtos.UserRegister;
 import busesProject.dtos.VerifyUserDto;
+import busesProject.exceptions.DuplicateEmailException;
+import busesProject.exceptions.DuplicateUsernameException;
 import busesProject.models.Usuario;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 @RequestMapping("/auth")
 @RestController
@@ -24,9 +28,18 @@ public class AuthController {
     }
 
     @PostMapping(value = "/register", produces = "application/json")
-    public ResponseEntity<Usuario> register(@RequestBody UserRegister registerUserDto) {
-        Usuario registeredUser = authenticationService.signup(registerUserDto);
-        return ResponseEntity.ok(registeredUser);
+    public ResponseEntity<?> register(@RequestBody UserRegister registerUserDto) {
+        try {
+            Usuario registeredUser = authenticationService.signup(registerUserDto);
+            return ResponseEntity.ok(registeredUser);
+        }catch (DuplicateEmailException e) {
+            return ResponseEntity.badRequest().body("{\"email\": \"" + e.getMessage() + "\"}");
+        } catch (DuplicateUsernameException e) {
+            return ResponseEntity.badRequest().body("{\"username\": \"" + e.getMessage() + "\"}");
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body("{\"error\": \"" + "Error desconocido en el registro" + "\"}");
+        }
+
     }
 
     @PostMapping("/login")
@@ -48,7 +61,12 @@ public class AuthController {
     }
 
     @PostMapping("/resend")
-    public ResponseEntity<?> resendVerificationCode(@RequestParam String email) {
+    public ResponseEntity<?> resendVerificationCode(@RequestBody Map<String, String> request) {
+        String email = request.get("email");
+        if (email == null || email.isEmpty()) {
+            return ResponseEntity.badRequest().body("{\"error\": \"El email es obligatorio.\"}");
+        }
+
         try {
             authenticationService.resendVerificationCode(email);
             return ResponseEntity.ok("{\"message\": \"Verification code sent\"}");
@@ -56,5 +74,6 @@ public class AuthController {
             return ResponseEntity.badRequest().body("{\"error\": \"" + e.getMessage() + "\"}");
         }
     }
+
 
 }

@@ -10,16 +10,28 @@ import svgUser from "../assets/imgSvg/userProfile.svg";
 import svgContact from "../assets/imgSvg/contact.svg";
 import Welcome from "../components/Welcome";
 import "../assets/styles/Login.css";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function Login() {
   const [isSignUp, setIsSignUp] = useState(false);
   const [errors, setErrors] = useState({});
   const [isVerifying, setIsVerifying] = useState(false);
   const [userEmail, setUserEmail] = useState("");
-  const { login } = useAuth();
-  const navigate = useNavigate();
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [error, setError] = useState(null);
+
+  const { login } = useAuth();
+  const navigate = useNavigate();
+
+  const notifySuccess = (message) => {
+    toast.success(message, { position: "top-right", autoClose: 3000 });
+  };
+
+  const notifyError = (message) => {
+    toast.error(message, { position: "top-right", autoClose: 3000 });
+  };
+
   const handleChange = (e) => {
     setFormData((prevState) => ({
       ...prevState,
@@ -32,7 +44,7 @@ function Login() {
   };
 
   const handleSubmit = async () => {
-    console.log({formData})
+    console.log({ formData });
     try {
       const response = await fetch("http://localhost:8080/auth/login", {
         method: "POST",
@@ -91,7 +103,9 @@ function Login() {
       setErrors(validationErrors);
       return;
     }
+
     setErrors({});
+
     try {
       const response = await fetch("http://localhost:8080/auth/register", {
         method: "POST",
@@ -105,15 +119,20 @@ function Login() {
         if (responseData.email) {
           setErrors({ email: responseData.email });
         }
+        else if (responseData.username) {
+          setErrors({username:responseData.username})
+        }
         return;
       }
 
-      console.log("Registro exitoso");
+      notifySuccess("Registro exitoso. Verifique su correo");
       setErrors({});
       setUserEmail(data.email);
       setIsVerifying(true);
+      setIsSignUp(false);
     } catch (error) {
-      console.error("Error en el registro:", error.message);
+      notifyError("Error en el registro.");
+      console.log(error);
     }
   };
 
@@ -216,6 +235,7 @@ function Login() {
 
   return (
     <div className={`container-Login ${isSignUp ? "toggle" : ""}`}>
+      <ToastContainer />
       {isVerifying ? (
         <div className="container-form-verify">
           <VerifyCodeForm onVerify={handleVerify} email={userEmail} />

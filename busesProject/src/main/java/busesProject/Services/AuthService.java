@@ -2,9 +2,12 @@ package busesProject.Services;
 import busesProject.dtos.UserLogin;
 import busesProject.dtos.UserRegister;
 import busesProject.dtos.VerifyUserDto;
+import busesProject.exceptions.DuplicateEmailException;
+import busesProject.exceptions.DuplicateUsernameException;
 import busesProject.models.Usuario;
 import busesProject.repositories.UsuarioRepository;
 import jakarta.mail.MessagingException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -45,14 +48,26 @@ public class AuthService {
                 input.getRol(),
                 input.getUsername()
         );
+        try {
+            Usuario data = userRepository.save(user);
+            user.setVerificationCode(generateVerificationCode());
+            user.setVerificationExpiration(LocalDateTime.now().plusMinutes(15));
+            user.setEnabled(false);
 
-        user.setVerificationCode(generateVerificationCode());
-        user.setVerificationExpiration(LocalDateTime.now().plusMinutes(15));
-        user.setEnabled(false);
+            sendVerificationEmail(user);
+            return data;
+        }catch (DataIntegrityViolationException e) {
+            String errorMessage = e.getMessage();
 
-        sendVerificationEmail(user);
+            // Verificar si el mensaje contiene el email o el username ingresado
+            if (errorMessage.contains(input.getEmail())) {
+                throw new DuplicateEmailException("Ya existe una cuenta con ese email.");
+            } else if (errorMessage.contains(input.getUsername())) {
+                throw new DuplicateUsernameException("Ya existe una cuenta con ese usuario.");
+            }
 
-        return userRepository.save(user);
+            throw new RuntimeException("Error desconocido al registrar usuario.");
+        }
     }
 
 
