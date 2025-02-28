@@ -82,11 +82,16 @@ function Login() {
         }),
       });
 
-      if (!response.ok) {
-        throw new Error(await response.text()); // ❌ Lanza error para manejarlo en `catch`
+      let data;
+      try {
+        data = await response.json(); // ✅ Intentar parsear la respuesta como JSON
+      } catch (jsonError) {
+        data = { message: await response.text() }; // ✅ Si no es JSON, obtener como texto
       }
 
-      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.message || "Error desconocido en el servidor.");
+      }
 
       localStorage.setItem("token", data.token);
       login(data.token);

@@ -1,8 +1,17 @@
 import { useState } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
-import { toast } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
 import "../assets/styles/ResetPassword.css";
 import { Input } from "../components/Input"; // ✅ Importar el componente Input
+
+// ✅ Funciones para manejar notificaciones
+const notifySuccess = (message) => {
+  toast.success(message, { position: "top-right", autoClose: 3000 });
+};
+
+const notifyError = (message) => {
+  toast.error(message, { position: "top-right", autoClose: 3000 });
+};
 
 function ResetPassword() {
   const [searchParams] = useSearchParams();
@@ -11,10 +20,31 @@ function ResetPassword() {
   const [newPassword, setNewPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
+  const validatePassword = (password) => {
+    const errors = [];
+
+    if (password.length < 8) {
+      errors.push("Debe tener al menos 8 caracteres.");
+    }
+    if (!/[A-Z]/.test(password)) {
+      errors.push("Debe contener al menos una mayúscula.");
+    }
+    if (!/\d/.test(password)) {
+      errors.push("Debe contener al menos un número.");
+    }
+    if (!/[\W_]/.test(password)) {
+      errors.push("Debe contener al menos un carácter especial.");
+    }
+
+    return errors;
+  };
+
   const handleResetPassword = async (e) => {
     e.preventDefault();
-    if (!newPassword || newPassword.length < 6) {
-      toast.error("La contraseña debe tener al menos 6 caracteres.");
+
+    const passwordErrors = validatePassword(newPassword);
+    if (passwordErrors.length > 0) {
+      notifyError(passwordErrors.join(" "));
       return;
     }
 
@@ -32,15 +62,15 @@ function ResetPassword() {
       );
 
       if (response.ok) {
-        toast.success("Contraseña restablecida con éxito.");
+        notifySuccess("Contraseña restablecida con éxito.");
         navigate("/login");
       } else {
         const errorMessage = await response.text();
-        toast.error(errorMessage || "Error al restablecer la contraseña.");
+        notifyError(errorMessage || "Error al restablecer la contraseña.");
       }
     } catch (error) {
       console.error("Error en la solicitud:", error);
-      toast.error("Error al conectar con el servidor.");
+      notifyError("Error al conectar con el servidor.");
     } finally {
       setLoading(false);
     }
@@ -48,6 +78,7 @@ function ResetPassword() {
 
   return (
     <div className="reset-password-container">
+      <ToastContainer/>
       <h2>Restablecer Contraseña</h2>
       <p>Ingrese su nueva contraseña.</p>
 
