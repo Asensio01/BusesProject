@@ -60,12 +60,18 @@ function VerifyCodeForm({ onVerify, email }) {
       return;
     }
 
-    // ✅ Enviar verificationCode y email
-    const requestBody = {
-      email: email,
+    if (!email || typeof email !== "string") {
+      toast.error("El correo no es válido.");
+      return;
+    }
+
+    // ✅ Asegurar que los valores se envían en el formato correcto
+    console.log("Llamando a handleVerify con:", {
+      email,
       verificationCode: fullCode,
-    };
-    onVerify(requestBody);
+    });
+
+    onVerify({ email, verificationCode: fullCode });
   };
 
   const handleResendCode = async () => {

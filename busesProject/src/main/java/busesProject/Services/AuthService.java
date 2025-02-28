@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.Random;
+import java.util.UUID;
 
 @Service
 public class AuthService {
@@ -70,22 +71,21 @@ public class AuthService {
         }
     }
 
-
     public Usuario authenticate(UserLogin input) {
         Usuario user = userRepository.findByEmail(input.getEmail())
-                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+                .orElseThrow(() -> new UsernameNotFoundException("Error: Usuario no encontrado."));
 
         if (!user.isEnabled()) {
-            throw new RuntimeException("Account not verified. Please verify your account.");
+            throw new RuntimeException("Error: Cuenta no verificada. Por favor, revisa tu correo electrónico.");
         }
 
-        // 💡 Comparar manualmente la contraseña usando PasswordEncoder
         if (!passwordEncoder.matches(input.getPassword(), user.getPassword())) {
-            throw new BadCredentialsException("Invalid credentials");
+            throw new BadCredentialsException("Error: Credenciales inválidas. Verifica tu correo y contraseña.");
         }
 
         return user;
     }
+
 
 
     public void verifyUser(VerifyUserDto input) {
@@ -151,5 +151,50 @@ public class AuthService {
         Random random = new Random();
         int code = random.nextInt(900000) + 100000;
         return String.valueOf(code);
+    }
+
+    public void sendPasswordResetEmail(String email) {
+        Optional<Usuario> optionalUser = userRepository.findByEmail(email);
+        if (optionalUser.isPresent()) {
+            Usuario user = optionalUser.get();
+            String token = UUID.randomUUID().toString();
+            user.setResetToken(token);
+            user.setResetTokenExpiration(LocalDateTime.now().plusMinutes(30));
+            userRepository.save(user);
+
+            String resetLink = "http://localhost:8080/auth/reset-password?token=" + token;
+            String subject = "Restablecimiento de Contraseña";
+            String message = "<html><body>"
+                    + "<h2>Solicitud de Restablecimiento de Contraseña</h2>"
+                    + "<p>Hemos recibido una solicitud para restablecer tu contraseña. Si no hiciste esta solicitud, ignora este mensaje.</p>"
+                    + "<p>Haz clic en el siguiente enlace para restablecer tu contraseña:</p>"
+                    + "<a href='" + resetLink + "'>Restablecer Contraseña</a>"
+                    + "<p>Este enlace expirará en 30 minutos.</p>"
+                    + "</body></html>";
+
+            try {
+                emailService.sendVerificationEmail(user.getEmail(), subject, message);
+            } catch (MessagingException e) {
+                throw new RuntimeException("Error al enviar el correo de restablecimiento de contraseña.");
+            }
+        } else {
+            throw new RuntimeException("No se encontró una cuenta con este correo.");
+        }
+    }
+
+    public void resetPassword(String token, String newPassword) {
+        Optional<Usuario> optionalUser = userRepository.findByResetToken(token);
+        if (optionalUser.isPresent()) {
+            Usuario user = optionalUser.get();
+            if (user.getResetTokenExpiration().isBefore(LocalDateTime.now())) {
+                throw new RuntimeException("El enlace de restablecimiento ha expirado.");
+            }
+            user.setPassword(passwordEncoder.encode(newPassword));
+            user.setResetToken(null);
+            user.setResetTokenExpiration(null);
+            userRepository.save(user);
+        } else {
+            throw new RuntimeException("Token inválido.");
+        }
     }
 }

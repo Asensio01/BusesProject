@@ -63,79 +63,77 @@ function CrearRutas() {
         setMensaje("Error al crear la ruta.");
       }
     } catch (error) {
-      console.error("Error en la solicitud:", error);
+
+      return (
+        <div className="crear-rutas-container">
+          <h1>Crear Rutas</h1>
+          {mensaje && <p className="mensaje">{mensaje}</p>}
+          <form onSubmit={handleSubmit}>
+            <input
+              type="text"
+              placeholder="Nombre de la Ruta"
+              value={nombreRuta}
+              onChange={(e) => setNombreRuta(e.target.value)}
+              required
+            />
+
+            <h3>Agregar Tramos</h3>
+
+            <select
+              value={ciudadOrigen}
+              onChange={(e) => setCiudadOrigen(e.target.value)}
+              required
+            >
+              <option value="">Seleccionar Origen</option>
+              {ciudades.map((ciudad) => (
+                <option key={ciudad.id_ciudad} value={ciudad.id_ciudad}>
+                  {ciudad.nombre}
+                </option>
+              ))}
+            </select>
+
+            <select
+              value={ciudadDestino}
+              onChange={(e) => setCiudadDestino(e.target.value)}
+              required
+            >
+              <option value="">Seleccionar Destino</option>
+              {ciudades.map((ciudad) => (
+                <option key={ciudad.id_ciudad} value={ciudad.id_ciudad}>
+                  {ciudad.nombre}
+                </option>
+              ))}
+            </select>
+
+            <input
+              type="time"
+              value={horario}
+              onChange={(e) => setHorario(e.target.value)}
+              required
+            />
+
+            <button type="button" className="btn-primary" onClick={agregarTramo}>
+              Agregar Tramo
+            </button>
+
+            <h3>Tramos Agregados</h3>
+            <ul className="tramos-list">
+              {tramos.map((tramo, index) => (
+                <li key={index}>
+                  {ciudades.find((c) => c.id_ciudad == tramo.origen)?.nombre} →{" "}
+                  {ciudades.find((c) => c.id_ciudad == tramo.destino)?.nombre} |
+                  Horario: {tramo.horario}
+                </li>
+              ))}
+            </ul>
+
+            <button type="submit" className="btn-primary">
+              Crear Ruta
+            </button>
+          </form>
+        </div>
+      );
     }
-  };
-
-  return (
-    <div className="crear-rutas-container">
-      <h1>Crear Rutas</h1>
-      {mensaje && <p className="mensaje">{mensaje}</p>}
-      <form onSubmit={handleSubmit}>
-        <input
-          type="text"
-          placeholder="Nombre de la Ruta"
-          value={nombreRuta}
-          onChange={(e) => setNombreRuta(e.target.value)}
-          required
-        />
-
-        <h3>Agregar Tramos</h3>
-
-        <select
-          value={ciudadOrigen}
-          onChange={(e) => setCiudadOrigen(e.target.value)}
-          required
-        >
-          <option value="">Seleccionar Origen</option>
-          {ciudades.map((ciudad) => (
-            <option key={ciudad.id_ciudad} value={ciudad.id_ciudad}>
-              {ciudad.nombre}
-            </option>
-          ))}
-        </select>
-
-        <select
-          value={ciudadDestino}
-          onChange={(e) => setCiudadDestino(e.target.value)}
-          required
-        >
-          <option value="">Seleccionar Destino</option>
-          {ciudades.map((ciudad) => (
-            <option key={ciudad.id_ciudad} value={ciudad.id_ciudad}>
-              {ciudad.nombre}
-            </option>
-          ))}
-        </select>
-
-        <input
-          type="time"
-          value={horario}
-          onChange={(e) => setHorario(e.target.value)}
-          required
-        />
-
-        <button type="button" className="btn-primary" onClick={agregarTramo}>
-          Agregar Tramo
-        </button>
-
-        <h3>Tramos Agregados</h3>
-        <ul className="tramos-list">
-          {tramos.map((tramo, index) => (
-            <li key={index}>
-              {ciudades.find((c) => c.id_ciudad == tramo.origen)?.nombre} →{" "}
-              {ciudades.find((c) => c.id_ciudad == tramo.destino)?.nombre} |
-              Horario: {tramo.horario}
-            </li>
-          ))}
-        </ul>
-
-        <button type="submit" className="btn-primary">
-          Crear Ruta
-        </button>
-      </form>
-    </div>
-  );
+  }
 }
-
 export default CrearRutas;

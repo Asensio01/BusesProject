@@ -3,6 +3,8 @@ package busesProject.controllers;
 import busesProject.Services.UserService;
 import busesProject.models.Usuario;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -11,22 +13,23 @@ import java.util.List;
 @RestController
 public class UserController {
     private final UserService userService;
-
     public UserController(UserService userService) {
         this.userService = userService;
     }
 
     @GetMapping("/me")
     public ResponseEntity<Usuario> authenticatedUser() {
-        return ResponseEntity.ok(userService.getAuthenticatedUser());
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Usuario currentUser = (Usuario) authentication.getPrincipal();
+        return ResponseEntity.ok(currentUser);
     }
 
     @GetMapping("/")
     public ResponseEntity<List<Usuario>> allUsers() {
-        return ResponseEntity.ok(userService.allUsers());
+        List <Usuario> users = userService.allUsers();
+        return ResponseEntity.ok(users);
     }
 
-    // ✅ Endpoint para ascender a ADMIN a un usuario por su ID
     @PutMapping("/{idUsuario}/promote")
     public ResponseEntity<?> promoteUser(@PathVariable Long idUsuario) {
         boolean promoted = userService.promoteUser(idUsuario);

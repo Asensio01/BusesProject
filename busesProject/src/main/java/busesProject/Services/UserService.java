@@ -1,6 +1,6 @@
 package busesProject.Services;
 
-import busesProject.enums.Rol; // Importar el enum de roles
+import busesProject.enums.Rol;
 import busesProject.models.Usuario;
 import busesProject.repositories.UsuarioRepository;
 import org.springframework.security.core.Authentication;
@@ -14,8 +14,7 @@ import java.util.Optional;
 @Service
 public class UserService {
     private final UsuarioRepository userRepository;
-
-    public UserService(UsuarioRepository userRepository) {
+    public UserService(UsuarioRepository userRepository, EmailService emailService) {
         this.userRepository = userRepository;
     }
 
@@ -45,3 +44,6 @@ public class UserService {
         return false; // No se pudo ascender porque no existía o ya era admin
     }
 }
+
+
+

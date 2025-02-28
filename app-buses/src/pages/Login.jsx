@@ -139,22 +139,42 @@ function Login() {
   };
 
   const handleVerify = async ({ email, verificationCode }) => {
-    console.log(JSON.stringify(email, verificationCode));
-    const response = await fetch("http://localhost:8080/auth/verify", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, verificationCode }),
-    });
+    console.log(
+      "Enviando código:",
+      JSON.stringify({ email, verificationCode })
+    );
 
-    const data = await response.json();
+    try {
+      const response = await fetch("http://localhost:8080/auth/verify", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, verificationCode }),
+      });
 
-    if (response.ok) {
-      console.log("Código validado. Usuario autenticado.");
+      if (!response.ok) {
+        // ✅ Si la respuesta no es OK, capturar el mensaje de error
+        const errorData = await response.json();
+        console.error(
+          "Código incorrecto:",
+          errorData.error || "Error desconocido"
+        );
+        toast.error(errorData.error || "Código incorrecto. Intenta de nuevo.");
+        return;
+      }
+
+      // ✅ Si la verificación fue exitosa, manejar la autenticación
+      const data = await response.json();
+      console.log("Código validado. Usuario autenticado."+data);
+
+      // ✅ Cambiar estado para continuar con el proceso
       setIsVerifying(false);
-    } else {
-      console.error("Código incorrecto:", data.message);
+      toast.success("Código verificado correctamente.");
+    } catch (error) {
+      console.error("Error en la verificación:", error);
+      toast.error("Error al conectar con el servidor.");
     }
   };
+
   const StyleWelcomeBtn = {
     backgroundColor: "#E7BA45",
     color: "#243774",

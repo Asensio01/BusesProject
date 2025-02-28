@@ -10,7 +10,10 @@ import busesProject.dtos.VerifyUserDto;
 import busesProject.exceptions.DuplicateEmailException;
 import busesProject.exceptions.DuplicateUsernameException;
 import busesProject.models.Usuario;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
@@ -70,6 +73,26 @@ public class AuthController {
         try {
             authenticationService.resendVerificationCode(email);
             return ResponseEntity.ok("{\"message\": \"Verification code sent\"}");
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body("{\"error\": \"" + e.getMessage() + "\"}");
+        }
+    }
+
+    @PostMapping("/forgot-password")
+    public ResponseEntity<?> forgotPassword(@RequestParam String email) {
+        try {
+            authenticationService.sendPasswordResetEmail(email);
+            return ResponseEntity.ok("{\"message\": \"Se ha enviado un correo con instrucciones para restablecer la contraseña.\"}");
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body("{\"error\": \"" + e.getMessage() + "\"}");
+        }
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<?> resetPassword(@RequestParam String token, @RequestParam String newPassword) {
+        try {
+            authenticationService.resetPassword(token, newPassword);
+            return ResponseEntity.ok("{\"message\": \"Contraseña restablecida con éxito.\"}");
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body("{\"error\": \"" + e.getMessage() + "\"}");
         }

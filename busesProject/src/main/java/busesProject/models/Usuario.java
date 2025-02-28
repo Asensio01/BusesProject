@@ -24,7 +24,7 @@ public class Usuario implements UserDetails {
     private int idUsuario;
 
     @NotBlank
-    @Column(nullable = false, length = 50)
+    @Column(unique = true, nullable = false, length = 50)
     private String nombre;
 
     @Column(nullable = false, length = 50)
@@ -52,7 +52,14 @@ public class Usuario implements UserDetails {
     @Column(name = "verification_expiration")
     private LocalDateTime verificationExpiration;
 
+
     private boolean enabled;
+
+    @Column(name = "reset_token", length = 255)
+    private String resetToken;
+
+    @Column(name = "reset_token_expiration")
+    private LocalDateTime resetTokenExpiration;
 
     public Usuario() {
     }
@@ -97,6 +104,8 @@ public class Usuario implements UserDetails {
     public boolean isCredentialsNonExpired() {
         return true;
     }
+
+
 
     @Override
     public boolean isEnabled() {
