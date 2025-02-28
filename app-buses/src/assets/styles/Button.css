@@ -1,0 +1,43 @@
+.button {
+  width: 100%;
+  max-width: 200px;
+  height: 50px;
+  font-size: 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-top: 10px;
+  transition: opacity 0.3s ease, transform 0.2s ease;
+}
+
+.button.solid {
+  background-color: #3AB397;
+  color: white;
+  border: none;
+}
+
+.button.outline {
+  background-color: transparent;
+  color: #3AB397;
+  border: 2px solid #3AB397;
+}
+
+.button:hover {
+  opacity: 0.9;
+  transform: scale(1.05);
+}
+
+@media (max-width: 768px) {
+  .button {
+    max-width: 200px;
+    height: 45px;
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .button {
+    max-width: 180px;
+    height: 40px;
+    font-size: 10px;
+  }
+}
