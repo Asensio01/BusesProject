@@ -75,17 +75,37 @@ public class AuthService {
         Usuario user = userRepository.findByEmail(input.getEmail())
                 .orElseThrow(() -> new UsernameNotFoundException("Error: Usuario no encontrado."));
 
-        if (!user.isEnabled()) {
-            throw new RuntimeException("Error: Cuenta no verificada. Por favor, revisa tu correo electrónico.");
+        // **Verificar si la cuenta está bloqueada antes de comprobar la contraseña**
+        if (user.getBloqueadoHasta() != null && LocalDateTime.now().isBefore(user.getBloqueadoHasta())) {
+            throw new RuntimeException("Cuenta bloqueada. Intenta nuevamente después de: " + user.getBloqueadoHasta());
         }
 
+        // **Verificar la contraseña**
         if (!passwordEncoder.matches(input.getPassword(), user.getPassword())) {
-            throw new BadCredentialsException("Error: Credenciales inválidas. Verifica tu correo y contraseña.");
+            int intentosFallidos = user.getIntentosFallidos() + 1;
+            user.setIntentosFallidos(intentosFallidos);
+
+            // **Si alcanza 3 intentos fallidos, bloquear por 5 minutos**
+            if (intentosFallidos >= 3) {
+                user.setBloqueadoHasta(LocalDateTime.now().plusMinutes(5));
+            }
+
+            userRepository.save(user); // **Guardar cambios en la BD**
+
+            if (intentosFallidos >= 3) {
+                throw new RuntimeException("Cuenta bloqueada por 5 minutos debido a múltiples intentos fallidos.");
+            }
+
+            throw new BadCredentialsException("Error: Credenciales inválidas. Intentos restantes: " + (3 - intentosFallidos));
         }
+
+        // **Si la autenticación es exitosa, restablecer intentos fallidos y bloqueo**
+        user.setIntentosFallidos(0);
+        user.setBloqueadoHasta(null);
+        userRepository.save(user); // **Guardar cambios en la BD**
 
         return user;
     }
-
 
 
     public void verifyUser(VerifyUserDto input) {

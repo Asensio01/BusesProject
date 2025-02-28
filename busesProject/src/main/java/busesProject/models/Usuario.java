@@ -67,6 +67,13 @@ public class Usuario implements UserDetails {
     @Column(name = "reset_token_expiration")
     private LocalDateTime resetTokenExpiration;
 
+    @Column(name = "intentos_fallidos", nullable = false)
+    private int intentosFallidos = 0;
+
+    @Column(name = "bloqueado_hasta")
+    private LocalDateTime bloqueadoHasta;
+
+
     public Usuario() {
     }
 
