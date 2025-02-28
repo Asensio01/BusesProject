@@ -10,12 +10,12 @@ function CrearRutas() {
   const [horario, setHorario] = useState("");
   const [mensaje, setMensaje] = useState("");
 
-  useEffect(() => {
-    fetch("http://localhost:8080/api/ciudades")
-      .then((res) => res.json())
-      .then((data) => setCiudades(data))
-      .catch((error) => console.error("Error al cargar ciudades:", error));
-  }, []);
+  // useEffect(() => {
+  //   fetch("http://localhost:8080/api/ciudades")
+  //     .then((res) => res.json())
+  //     .then((data) => setCiudades(data))
+  //     .catch((error) => console.error("Error al cargar ciudades:", error));
+  // }, []);
 
   const agregarTramo = () => {
     if (!ciudadOrigen || !ciudadDestino || !horario) {

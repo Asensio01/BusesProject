@@ -31,7 +31,7 @@ function App() {
             }
           />
           <Route
-            path="/MenuAdmin"
+            path="/MenuAdmin/*"
             element={
               <ProtectedRoute>
                 <MenuAdmin />
