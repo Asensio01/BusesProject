@@ -66,7 +66,7 @@ export function Form({
           );
         })}
       </div>
-      <a>{textA}</a>
+      <a href="/forgot-password">{textA}</a>
       <Button type="submit" text={buttonText} styleButton={styleButton} />
     </form>
   );

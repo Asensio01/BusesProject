@@ -10,6 +10,8 @@ import Login from "./pages/Login";
 import Home from "./pages/Home";
 import MenuAdmin from "./pages/MenuAdmin";
 import Roles from "./pages/Roles";
+import ForgotPassword from "./components/ForgotPassword";
+import ResetPassword from "./components/ResetPassword";
 
 function App() {
   return (
@@ -17,6 +19,9 @@ function App() {
       <Router>
         <Routes>
           <Route path="/login" element={<Login />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />{" "}
+          {/* ✅ Nueva ruta */}
+          <Route path="/reset-password" element={<ResetPassword />} />
           <Route
             path="/home"
             element={

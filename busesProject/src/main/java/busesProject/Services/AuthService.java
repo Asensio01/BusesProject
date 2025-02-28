@@ -50,10 +50,10 @@ public class AuthService {
                 input.getUsername()
         );
         try {
-            Usuario data = userRepository.save(user);
             user.setVerificationCode(generateVerificationCode());
             user.setVerificationExpiration(LocalDateTime.now().plusMinutes(15));
             user.setEnabled(false);
+            Usuario data = userRepository.save(user);
 
             sendVerificationEmail(user);
             return data;
@@ -162,7 +162,7 @@ public class AuthService {
             user.setResetTokenExpiration(LocalDateTime.now().plusMinutes(30));
             userRepository.save(user);
 
-            String resetLink = "http://localhost:8080/auth/reset-password?token=" + token;
+            String resetLink = "http://localhost:5173/reset-password?token=" + token;
             String subject = "Restablecimiento de Contraseña";
             String message = "<html><body>"
                     + "<h2>Solicitud de Restablecimiento de Contraseña</h2>"

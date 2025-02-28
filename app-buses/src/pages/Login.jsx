@@ -32,6 +32,32 @@ function Login() {
     toast.error(message, { position: "top-right", autoClose: 3000 });
   };
 
+  const resendVerificationCode = async (email) => {
+   console.log("Email recibido en resendVerificationCode:", email);
+
+   if (!email || typeof email !== "string") {
+     console.error("Error: Email no válido en resendVerificationCode.");
+     notifyError("No se puede reenviar el código: Email inválido.");
+     return;
+   }
+    try {
+      const response = await fetch("http://localhost:8080/auth/resend", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
+      console.log("se envio")
+      if (response.ok) {
+        notifySuccess("Se ha enviado un nuevo código de verificación.");
+      } else {
+        notifyError("Error al reenviar el código de verificación.");
+      }
+    } catch (error) {
+      console.error("Error en la solicitud:", error);
+      notifyError("Error al conectar con el servidor.");
+    }
+  };
+
   const handleChange = (e) => {
     setFormData((prevState) => ({
       ...prevState,
@@ -45,28 +71,52 @@ function Login() {
 
   const handleSubmit = async () => {
     console.log({ formData });
+
     try {
       const response = await fetch("http://localhost:8080/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({
+          email: formData.email.trim(),
+          password: formData.password.trim(),
+        }),
       });
+
+      if (!response.ok) {
+        throw new Error(await response.text()); // ❌ Lanza error para manejarlo en `catch`
+      }
 
       const data = await response.json();
 
-      if (response.ok) {
-        localStorage.setItem("token", data.token); // ✅ Guardar token en localStorage
-        login(data.token); // ✅ Llamar a la función del contexto de autenticación
-        navigate("/home"); // ✅ Redirigir al home
-      } else {
-        setError(data.message || "Error en el inicio de sesión");
-      }
+      localStorage.setItem("token", data.token);
+      login(data.token);
+      notifySuccess("Inicio de sesión exitoso.");
+      navigate("/home");
     } catch (error) {
       console.error("Error en el login:", error);
-      setError("Error al conectar con el servidor");
+
+      const errorMessage =
+        error.message || "Error al conectar con el servidor.";
+
+      if (errorMessage.includes("Cuenta no verificada")) {
+        notifyError("Cuenta no verificada. Se ha enviado un nuevo código.");
+        console.log("Guardando email en setUserEmail:", formData.email);
+
+        setUserEmail(formData.email);
+        setIsVerifying(true);
+        setIsSignUp(false);
+
+        // ✅ Intentar reenviar el código solo si `formData.email` es válido
+        if (formData.email) {
+          await resendVerificationCode(formData.email);
+        } else {
+          notifyError("Error: Email inválido para reenvío de código.");
+        }
+      } else {
+        notifyError(errorMessage);
+      }
     }
   };
-
 
   const handleRegister = async (data) => {
     let validationErrors = {};
@@ -120,9 +170,8 @@ function Login() {
       if (!response.ok) {
         if (responseData.email) {
           setErrors({ email: responseData.email });
-        }
-        else if (responseData.username) {
-          setErrors({username:responseData.username})
+        } else if (responseData.username) {
+          setErrors({ username: responseData.username });
         }
         return;
       }
@@ -164,7 +213,7 @@ function Login() {
 
       // ✅ Si la verificación fue exitosa, manejar la autenticación
       const data = await response.json();
-      console.log("Código validado. Usuario autenticado."+data);
+      console.log("Código validado. Usuario autenticado." + data);
 
       // ✅ Cambiar estado para continuar con el proceso
       setIsVerifying(false);
