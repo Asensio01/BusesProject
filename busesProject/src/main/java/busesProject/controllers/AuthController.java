@@ -10,24 +10,28 @@ import busesProject.dtos.VerifyUserDto;
 import busesProject.exceptions.DuplicateEmailException;
 import busesProject.exceptions.DuplicateUsernameException;
 import busesProject.models.Usuario;
+import busesProject.repositories.UsuarioRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.Map;
+import java.util.Optional;
 
 @RequestMapping("/auth")
 @RestController
 public class AuthController {
     private final JwtService jwtService;
-
+    private final UsuarioRepository usuarioRepository;
     private final AuthService authenticationService;
 
-    public AuthController(JwtService jwtService, AuthService authenticationService) {
+    public AuthController(JwtService jwtService, AuthService authenticationService, UsuarioRepository usuarioRepository) {
         this.jwtService = jwtService;
         this.authenticationService = authenticationService;
+        this.usuarioRepository = usuarioRepository; // ✅ Inicializarlo
     }
 
     @PostMapping(value = "/register", produces = "application/json")
@@ -46,12 +50,24 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<LoginResponse> authenticate(@RequestBody UserLogin loginUserDto){
+    public ResponseEntity<LoginResponse> authenticate(@RequestBody UserLogin loginUserDto) {
         Usuario authenticatedUser = authenticationService.authenticate(loginUserDto);
+
+        if (authenticatedUser == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new LoginResponse(null, 0));
+        }
+
         String jwtToken = jwtService.generateToken(authenticatedUser);
-        LoginResponse loginResponse = new LoginResponse(jwtToken, jwtService.getExpirationTime());
-        return ResponseEntity.ok(loginResponse);
+        LocalDateTime expirationTime = jwtService.getExpirationDate(jwtToken);
+
+        // ✅ Guardar el token en la base de datos
+        authenticatedUser.setAuthToken(jwtToken);
+        authenticatedUser.setAuthTokenExpiration(expirationTime);
+        usuarioRepository.save(authenticatedUser);
+
+        return ResponseEntity.ok(new LoginResponse(jwtToken, expirationTime.atZone(java.time.ZoneId.systemDefault()).toInstant().toEpochMilli()));
     }
+
 
     @PostMapping("/verify")
     public ResponseEntity<?> verifyUser(@RequestBody VerifyUserDto verifyUserDto) {
@@ -96,7 +112,27 @@ public class AuthController {
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body("{\"error\": \"" + e.getMessage() + "\"}");
         }
+
+
     }
+
+    @GetMapping("/me")
+    public ResponseEntity<?> getAuthenticatedUser(@RequestHeader("Authorization") String authHeader) {
+        String token = authHeader.replace("Bearer ", "");
+        Optional<Usuario> optionalUser = usuarioRepository.findByAuthToken(token);
+
+        if (optionalUser.isEmpty() || optionalUser.get().getAuthTokenExpiration().isBefore(LocalDateTime.now())) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Token inválido o expirado.");
+        }
+
+        Usuario user = optionalUser.get();
+        return ResponseEntity.ok(Map.of(
+                "nombre", user.getNombre(),
+                "rol", user.getRol().toString()
+        ));
+    }
+
+
 
 
 }

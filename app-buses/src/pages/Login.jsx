@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAuth } from "../Context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { Form } from "../components/Form";
@@ -32,21 +32,20 @@ function Login() {
     toast.error(message, { position: "top-right", autoClose: 3000 });
   };
 
+  // Función para reenviar el código de verificación
   const resendVerificationCode = async (email) => {
-   console.log("Email recibido en resendVerificationCode:", email);
-
-   if (!email || typeof email !== "string") {
-     console.error("Error: Email no válido en resendVerificationCode.");
-     notifyError("No se puede reenviar el código: Email inválido.");
-     return;
-   }
+    console.log("Email recibido en resendVerificationCode:", email);
+    if (!email || typeof email !== "string") {
+      console.error("Error: Email no válido en resendVerificationCode.");
+      notifyError("No se puede reenviar el código: Email inválido.");
+      return;
+    }
     try {
       const response = await fetch("http://localhost:8080/auth/resend", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email }),
       });
-      console.log("se envio")
       if (response.ok) {
         notifySuccess("Se ha enviado un nuevo código de verificación.");
       } else {
@@ -57,6 +56,39 @@ function Login() {
       notifyError("Error al conectar con el servidor.");
     }
   };
+
+  // useEffect para verificar si ya hay token almacenado y redirigir automáticamente
+  useEffect(() => {
+    console.log("🔍 Verificando sesión al cargar Login...");
+    const checkUserSession = async () => {
+      const savedToken = localStorage.getItem("token");
+      console.log("🔑 Token en localStorage:", savedToken);
+      if (!savedToken) return;
+      try {
+        const response = await fetch("http://localhost:8080/auth/me", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${savedToken}`,
+          },
+        });
+        if (!response.ok) {
+          console.log("❌ Token inválido, eliminando...");
+          localStorage.removeItem("token");
+          return;
+        }
+        const userData = await response.json();
+        console.log("✅ Usuario autenticado:", userData);
+        login(savedToken);
+        notifySuccess(`Bienvenido, ${userData.nombre}`);
+        navigate(userData.rol === "ADMIN" ? "/MenuAdmin" : "/home");
+      } catch (error) {
+        console.error("Error al verificar la sesión:", error);
+        localStorage.removeItem("token");
+      }
+    };
+    checkUserSession();
+  }, [login, navigate]);
 
   const handleChange = (e) => {
     setFormData((prevState) => ({
@@ -71,7 +103,6 @@ function Login() {
 
   const handleSubmit = async () => {
     console.log({ formData });
-
     try {
       const response = await fetch("http://localhost:8080/auth/login", {
         method: "POST",
@@ -81,37 +112,43 @@ function Login() {
           password: formData.password.trim(),
         }),
       });
-
       let data;
       try {
-        data = await response.json(); // ✅ Intentar parsear la respuesta como JSON
+        data = await response.json();
       } catch (jsonError) {
-        data = { message: await response.text() }; // ✅ Si no es JSON, obtener como texto
+        data = { message: await response.text() };
       }
-
       if (!response.ok) {
         throw new Error(data.message || "Error desconocido en el servidor.");
       }
-
       localStorage.setItem("token", data.token);
       login(data.token);
       notifySuccess("Inicio de sesión exitoso.");
-      navigate("/home");
+      // Obtener datos del usuario autenticado para redirigir según rol
+      const userResponse = await fetch("http://localhost:8080/auth/me", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${data.token}`,
+        },
+      });
+      if (userResponse.ok) {
+        const userData = await userResponse.json();
+        notifySuccess(`Bienvenido, ${userData.nombre}`);
+        navigate(userData.rol === "ADMIN" ? "/MenuAdmin" : "/home");
+      } else {
+        navigate("/home");
+      }
     } catch (error) {
       console.error("Error en el login:", error);
-
       const errorMessage =
         error.message || "Error al conectar con el servidor.";
-
       if (errorMessage.includes("Cuenta no verificada")) {
         notifyError("Cuenta no verificada. Se ha enviado un nuevo código.");
         console.log("Guardando email en setUserEmail:", formData.email);
-
         setUserEmail(formData.email);
         setIsVerifying(true);
         setIsSignUp(false);
-
-        // ✅ Intentar reenviar el código solo si `formData.email` es válido
         if (formData.email) {
           await resendVerificationCode(formData.email);
         } else {
@@ -125,25 +162,18 @@ function Login() {
 
   const handleRegister = async (data) => {
     let validationErrors = {};
-
-    // Validar email
     if (!data.email.includes("@")) {
       validationErrors.email = "Ingrese un correo válido.";
     }
-
-    // Validar teléfono (máximo 10 caracteres)
     if (!/^\d{4}-\d{4}$/.test(data.telefono)) {
       validationErrors.telefono =
         "El teléfono debe tener el formato 1234-5678.";
     }
-
-    // Validar contraseña
     const password = data.password;
     const hasUpperCase = /[A-Z]/.test(password);
     const hasSpecialChar = /[\W_]/.test(password);
     const hasNumber = /\d/.test(password);
     const hasMinLength = password.length >= 8;
-
     if (!hasMinLength) {
       validationErrors.password = "Debe tener al menos 8 caracteres.";
     } else if (!hasUpperCase) {
@@ -154,24 +184,19 @@ function Login() {
     } else if (!hasNumber) {
       validationErrors.password = "Debe contener al menos un número.";
     }
-
     if (Object.keys(validationErrors).length > 0) {
       console.log("Errores antes de actualizar:", validationErrors);
       setErrors(validationErrors);
       return;
     }
-
     setErrors({});
-
     try {
       const response = await fetch("http://localhost:8080/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ...data, rol: "USER" }),
       });
-
       const responseData = await response.json();
-
       if (!response.ok) {
         if (responseData.email) {
           setErrors({ email: responseData.email });
@@ -180,7 +205,6 @@ function Login() {
         }
         return;
       }
-
       notifySuccess("Registro exitoso. Verifique su correo");
       setErrors({});
       setUserEmail(data.email);
@@ -197,35 +221,28 @@ function Login() {
       "Enviando código:",
       JSON.stringify({ email, verificationCode })
     );
-
     try {
       const response = await fetch("http://localhost:8080/auth/verify", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, verificationCode }),
       });
-
       if (!response.ok) {
-        // ✅ Si la respuesta no es OK, capturar el mensaje de error
         const errorData = await response.json();
         console.error(
           "Código incorrecto:",
           errorData.error || "Error desconocido"
         );
-        toast.error(errorData.error || "Código incorrecto. Intenta de nuevo.");
+        notifyError(errorData.error || "Código incorrecto. Intenta de nuevo.");
         return;
       }
-
-      // ✅ Si la verificación fue exitosa, manejar la autenticación
       const data = await response.json();
-      console.log("Código validado. Usuario autenticado." + data);
-
-      // ✅ Cambiar estado para continuar con el proceso
+      console.log("Código validado. Usuario autenticado.", data);
       setIsVerifying(false);
-      toast.success("Código verificado correctamente.");
+      notifySuccess("Código verificado correctamente.");
     } catch (error) {
       console.error("Error en la verificación:", error);
-      toast.error("Error al conectar con el servidor.");
+      notifyError("Error al conectar con el servidor.");
     }
   };
 

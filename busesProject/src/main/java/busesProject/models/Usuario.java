@@ -52,6 +52,12 @@ public class Usuario implements UserDetails {
     @Column(name = "verification_expiration")
     private LocalDateTime verificationExpiration;
 
+    @Column(name = "auth_token", length = 500)
+    private String authToken;
+
+    @Column(name = "auth_token_expiration")
+    private LocalDateTime authTokenExpiration;
+
 
     private boolean enabled;
 

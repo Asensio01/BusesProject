@@ -10,10 +10,15 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
+
+import static javax.crypto.Cipher.SECRET_KEY;
 
 @Service
 public class JwtService {
@@ -39,7 +44,16 @@ public class JwtService {
     public String generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {
         return buildToken(extraClaims, userDetails, jwtExpiration);
     }
+    public LocalDateTime getExpirationDate(String token) {
+        Claims claims = Jwts.parser()
+                .setSigningKey(getSignInKey())
+                .parseClaimsJws(token)
+                .getBody();
 
+        return Instant.ofEpochMilli(claims.getExpiration().getTime())
+                .atZone(ZoneId.systemDefault())
+                .toLocalDateTime();
+    }
     public long getExpirationTime() {
         return jwtExpiration;
     }
