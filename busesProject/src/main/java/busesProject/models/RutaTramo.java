@@ -14,6 +14,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class RutaTramo {
+
   @EmbeddedId
   private RutaTramoId id;
 
@@ -28,6 +29,10 @@ public class RutaTramo {
   private Tramo tramo;
 
   @Enumerated(EnumType.STRING)
-  @Column(name = "tipo_viaje",insertable=false, updatable=false)
+  @Column(name = "tipo_viaje", insertable = false, updatable = false)  // Se evita la duplicación de la columna
   private TipoViaje tipoViaje;
+
+  public Long getIdRuta() {
+    return this.id.getIdRuta();
+  }
 }

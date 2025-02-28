@@ -12,18 +12,18 @@ import lombok.Setter;
 
 import java.io.Serializable;
 import java.util.Objects;
-
 @Embeddable
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+
 public class RutaTramoId implements Serializable{
+
   @Column(name = "id_ruta")
   private Long idRuta;
   @Column(name = "id_tramo")
   private Long idTramo;
-
   @Enumerated(EnumType.STRING)
   @Column(name = "tipo_viaje")
   private TipoViaje tipoViaje;
