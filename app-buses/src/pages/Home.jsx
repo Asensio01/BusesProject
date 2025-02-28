@@ -1,4 +1,4 @@
-import NavBar from "../components/NavBar"
+import NavBar from "../components/NavBar";
 
 function Home() {
   const userLinks = [
@@ -6,10 +6,13 @@ function Home() {
     { label: "Reservar Asiento", path: "/reservas" },
     { label: "Mis Viajes", path: "/mis-viajes" },
   ];
+
   return (
     <>
       <NavBar links={userLinks} />
-      <h1>Bienvenido al Panel de Usuario</h1>
+      <div className="home-container">
+        <h1>Bienvenido al Panel de Usuario</h1>
+      </div>
     </>
   );
 }

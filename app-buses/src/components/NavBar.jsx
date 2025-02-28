@@ -1,10 +1,19 @@
 import { useState } from "react";
 import PropTypes from "prop-types";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
+import { useAuth } from "../Context/AuthContext";
 import "../assets/styles/NavBar.css";
 
 function Navbar({ links }) {
   const [isOpen, setIsOpen] = useState(false);
+  const { logout } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout();
+    localStorage.removeItem("token");
+    navigate("/login");
+  };
 
   return (
     <nav className="navbar-container">
@@ -17,13 +26,17 @@ function Navbar({ links }) {
       <ul className={`navbar-links ${isOpen ? "open" : ""}`}>
         {links.map((link, index) => (
           <li key={index} className="nav-item">
-            {/* Usamos rutas absolutas para evitar concatenaciones */}
-            <NavLink className="nav-link" to={`/MenuAdmin/${link.path}`} end>
+            <NavLink className="nav-link" to={link.path} end>
               {link.label}
             </NavLink>
           </li>
         ))}
       </ul>
+
+      {/* ✅ Botón de Logout en la parte superior derecha */}
+      <button className="logout-button" onClick={handleLogout}>
+        Cerrar Sesión
+      </button>
     </nav>
   );
 }

@@ -13,7 +13,22 @@
     padding-top: 20px;
     transition: all 0.3s ease-in-out;
 }
+.logout-button {
+    position: absolute;
+    right: 20px;
+    top: 10px;
+    padding: 8px 15px;
+    background-color: #e74c3c;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+}
 
+.logout-button:hover {
+    background-color: #c0392b;
+}
 /* Botón Hamburguesa */
 .menu-toggle {
     display: none;
