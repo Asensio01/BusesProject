@@ -3,6 +3,7 @@ import Navbar from "../components/NavBar";
 import "../assets/styles/MenuAdmin.css";
 import CrearRutas from "./CrearRutas";
 import AscenderUsuarios from "./AscenderUsuarios";
+import AuditoriaRoles from "../components/AuditoriaRoles";
 
 function MenuAdmin() {
   return (
@@ -11,6 +12,7 @@ function MenuAdmin() {
         links={[
           { label: "Crear Rutas", path: "/MenuAdmin/crear-rutas" },
           { label: "Ascender Usuarios", path: "/MenuAdmin/ascender-usuarios" },
+          { label: "Auditoría de Roles", path: "/MenuAdmin/auditoria-roles" },
         ]}
       />
 
@@ -19,6 +21,7 @@ function MenuAdmin() {
           <Route index element={<Navigate to="crear-rutas" />} />
           <Route path="crear-rutas" element={<CrearRutas />} />
           <Route path="ascender-usuarios" element={<AscenderUsuarios />} />
+          <Route path="auditoria-roles" element={<AuditoriaRoles />} />
         </Routes>
       </div>
     </div>

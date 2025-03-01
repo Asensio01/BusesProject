@@ -23,12 +23,17 @@ function AscenderUsuarios() {
 
   // Función para ascender usuario a ADMIN
   const handlePromote = async (idUsuario) => {
+    const token = localStorage.getItem("token"); // ✅ Obtener el token del localStorage
+
     try {
       const response = await fetch(
         `http://localhost:8080/users/${idUsuario}/promote`,
         {
           method: "PUT",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`, // ✅ Enviar el token en el header
+          },
         }
       );
 
@@ -40,13 +45,15 @@ function AscenderUsuarios() {
         );
         setMensaje("Usuario ascendido a Administrador.");
       } else {
-        setMensaje("Error al ascender el usuario.");
+        const errorData = await response.json();
+        setMensaje(errorData.error || "Error al ascender el usuario.");
       }
     } catch (error) {
       console.error("Error en la solicitud:", error);
       setMensaje("Error al ascender el usuario.");
     }
   };
+
 
   return (
     <div className="ascender-usuarios-container">

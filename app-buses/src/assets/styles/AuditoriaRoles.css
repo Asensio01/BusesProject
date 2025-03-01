@@ -1,0 +1,22 @@
+.auditoria-container {
+  max-width: 800px;
+  margin: auto;
+  padding: 20px;
+  text-align: center;
+}
+
+.auditoria-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.auditoria-table th,
+.auditoria-table td {
+  border: 1px solid #ddd;
+  padding: 8px;
+}
+
+.auditoria-table th {
+  background-color: #243774;
+  color: white;
+}
