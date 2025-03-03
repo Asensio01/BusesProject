@@ -1,0 +1,61 @@
+/* Contenedor principal */
+.admin-container {
+  display: flex;
+}
+
+/* Contenido dinámico a la derecha */
+.admin-content {
+  margin-left: 250px;
+  padding: 20px;
+  width: 100%;
+}
+
+/* Estilos de la barra de búsqueda */
+.search-bar {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 15px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 16px;
+}
+
+/* Tabla de usuarios */
+.user-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+
+.user-table th,
+.user-table td {
+  border: 1px solid #ddd;
+  padding: 12px;
+  text-align: left;
+}
+
+.user-table th {
+  background-color: #243774;
+  color: white;
+}
+
+/* Botón de ascender */
+.promote-btn {
+  background-color: #e7ba45;
+  color: black;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.3s ease-in-out;
+}
+
+.promote-btn:hover {
+  background-color: #c69c30;
+}
+
+/* Etiqueta de administrador */
+.admin-tag {
+  font-weight: bold;
+  color: green;
+}

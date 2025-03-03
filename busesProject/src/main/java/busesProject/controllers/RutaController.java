@@ -1,37 +1,21 @@
 package busesProject.controllers;
 
 import busesProject.dtos.RutaDTO;
-import busesProject.dtos.RutaSimpleDTO;
 import busesProject.models.Ruta;
 import busesProject.Services.RutaService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/rutas")
+@RequestMapping("/api/rutas")
 public class RutaController {
 
-    @Autowired
-    private RutaService rutaService;
+    private final RutaService rutaService;
 
-    /**
-     * 🔹 Crear una nueva ruta (solo se inserta en la tabla `rutas`)
-     */
-    @PostMapping
-    public ResponseEntity<Ruta> crearRuta(@RequestBody RutaSimpleDTO rutaDTO) {
-        return ResponseEntity.ok(rutaService.crearRutaNueva(rutaDTO));
-    }
-
-
-    /**
-     * 🔹 Crear una nueva ruta con tramos asociados
-     */
-    @PostMapping("/con-tramos")
-    public ResponseEntity<Ruta> crearRutaConTramos(@RequestBody RutaDTO rutaDTO) {
-        return ResponseEntity.ok(rutaService.crearRuta(rutaDTO));
+    public RutaController(RutaService rutaService) {
+        this.rutaService = rutaService;
     }
 
     /**
@@ -39,23 +23,47 @@ public class RutaController {
      */
     @GetMapping
     public ResponseEntity<List<Ruta>> obtenerRutas() {
-        return ResponseEntity.ok(rutaService.obtenerRutas());
+        return ResponseEntity.ok(rutaService.obtenerTodasLasRutas());
     }
 
     /**
-     * 🔹 Editar una ruta
+     * 🔹 Crear una nueva ruta usa DTO
+     */
+    @PostMapping
+    public ResponseEntity<?> crearRuta(@RequestBody RutaDTO rutaDTO) {
+        try {
+            String nombreRuta = rutaDTO.getNombreRuta();
+            Ruta nuevaRuta = rutaService.crearRuta(nombreRuta);
+            return ResponseEntity.ok(nuevaRuta);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error al crear la ruta: " + e.getMessage());
+        }
+    }
+
+    /**
+     * 🔹 Editar una ruta usa DTO
      */
     @PutMapping("/{id}")
-    public ResponseEntity<Ruta> editarRuta(@PathVariable int id, @RequestBody RutaDTO rutaDTO) {
-        return ResponseEntity.ok(rutaService.editarRuta(id, rutaDTO));
+    public ResponseEntity<?> editarRuta(@PathVariable Integer id, @RequestBody RutaDTO rutaDTO) {
+        try {
+            String nuevoNombreRuta = rutaDTO.getNombreRuta();
+            Ruta rutaEditada = rutaService.editarRuta(id, nuevoNombreRuta);
+            return ResponseEntity.ok(rutaEditada);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error al editar la ruta: " + e.getMessage());
+        }
     }
 
     /**
      * 🔹 Eliminar una ruta
      */
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> eliminarRuta(@PathVariable int id) {
-        rutaService.eliminarRuta(id);
-        return ResponseEntity.ok("Ruta eliminada correctamente");
+    public ResponseEntity<String> eliminarRuta(@PathVariable Integer id) {
+        try {
+            rutaService.eliminarRuta(id);
+            return ResponseEntity.ok("Ruta eliminada correctamente");
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 }

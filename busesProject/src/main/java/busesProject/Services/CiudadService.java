@@ -9,12 +9,12 @@ import java.util.List;
 @Service
 public class CiudadService {
 
-    @Autowired
-    private CiudadRepository ciudadRepository;
+    private final CiudadRepository ciudadRepository;
 
-    /**
-     * 🔹 Obtener todas las ciudades
-     */
+    public CiudadService(CiudadRepository ciudadRepository) {
+        this.ciudadRepository = ciudadRepository;
+    }
+
     public List<Ciudad> obtenerTodasLasCiudades() {
         return ciudadRepository.findAll();
     }

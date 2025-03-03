@@ -1,16 +1,13 @@
 package busesProject.repositories;
 
+import busesProject.enums.TipoViaje;
+import busesProject.models.Ruta;
 import busesProject.models.RutaTramo;
-import busesProject.models.RutaTramoId;
+import busesProject.models.Tramo;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Modifying;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.stereotype.Repository;
 
-public interface RutaTramoRepository extends JpaRepository<RutaTramo, RutaTramoId> {
-
-    @Transactional
-    @Modifying
-    @Query("DELETE FROM RutaTramo rt WHERE rt.id.idRuta = :idRuta")
-    void deleteByRutaId(int idRuta);
+@Repository
+public interface RutaTramoRepository extends JpaRepository<RutaTramo, Integer> {
+    boolean existsByRutaAndTramoAndTipoViaje(Ruta ruta, Tramo tramo, TipoViaje tipoViaje);
 }

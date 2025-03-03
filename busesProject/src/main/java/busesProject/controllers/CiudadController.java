@@ -8,18 +8,19 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@CrossOrigin(origins = "*") // Permitir peticiones desde React/ Ya la tenia
 @RestController
-@RequestMapping("/ciudades")
+@RequestMapping("/api/ciudades")
 public class CiudadController {
 
-    @Autowired
-    private CiudadService ciudadService;
+    private final CiudadService ciudadService;
 
-    /**
-     * 🔹 GET all ciudades
-     */
+    public CiudadController(CiudadService ciudadService) {
+        this.ciudadService = ciudadService;
+    }
+
     @GetMapping
-    public ResponseEntity<List<Ciudad>> obtenerCiudades() {
-        return ResponseEntity.ok(ciudadService.obtenerTodasLasCiudades());
+    public List<Ciudad> obtenerCiudades() {
+        return ciudadService.obtenerTodasLasCiudades();
     }
 }

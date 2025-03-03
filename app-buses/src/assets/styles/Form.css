@@ -29,8 +29,49 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   gap: 15px;
   margin-bottom: 10px;
+}
+
+.input-group {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.floating-error {
+  position: absolute;
+  bottom: -20px;
+  left: 0;
+  background-color: #aebdff;
+  text-shadow: 1px 2px 5px #ffffff;
+  color: rgb(255, 0, 0);
+  font-size: 0.75rem;
+  padding: 5px 8px;
+  border-radius: 5px;
+  white-space: nowrap;
+  z-index: 10;
+  box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.3);
+  animation: fadeIn 0.2s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.form-container a {
+  text-decoration: none;
+  cursor: pointer;
+  font-size: 18px;
 }
 
 @media (max-width: 768px) {
@@ -46,6 +87,14 @@
   .form-subtitle {
     font-size: 14px;
   }
+
+  .form-container a {
+    font-size: 15px;
+  }
+
+  .floating-error {
+    font-size: 0.6rem;
+  }
 }
 
 @media (max-width: 480px) {
@@ -55,5 +104,19 @@
 
   .form-subtitle {
     font-size: 13px;
+  }
+
+  .form-container a {
+    font-size: 12px;
+  }
+
+  .floating-error {
+    font-size: 0.53rem;
+    max-width: 100%;
+    /* Se ajusta al ancho del input */
+    white-space: normal;
+    /* Permite saltos de línea */
+    word-wrap: break-word;
+    /* Rompe la palabra si es demasiado larga */
   }
 }

@@ -2,9 +2,12 @@ package busesProject.Services;
 import busesProject.dtos.UserLogin;
 import busesProject.dtos.UserRegister;
 import busesProject.dtos.VerifyUserDto;
+import busesProject.exceptions.DuplicateEmailException;
+import busesProject.exceptions.DuplicateUsernameException;
 import busesProject.models.Usuario;
 import busesProject.repositories.UsuarioRepository;
 import jakarta.mail.MessagingException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -37,14 +40,6 @@ public class AuthService {
     }
 
     public Usuario signup(UserRegister input) {
-        if (userRepository.findByEmail(input.getEmail()).isPresent()) {
-            throw new RuntimeException("Error: El correo electrónico ya está registrado.");
-        }
-
-        if (userRepository.findByUsername(input.getUsername()).isPresent()) {
-            throw new RuntimeException("Error: El nombre de usuario ya está en uso.");
-        }
-
         Usuario user = new Usuario(
                 input.getNombre(),
                 input.getApellido(),
@@ -54,14 +49,26 @@ public class AuthService {
                 input.getRol(),
                 input.getUsername()
         );
+        try {
+            user.setVerificationCode(generateVerificationCode());
+            user.setVerificationExpiration(LocalDateTime.now().plusMinutes(15));
+            user.setEnabled(false);
+            Usuario data = userRepository.save(user);
 
-        user.setVerificationCode(generateVerificationCode());
-        user.setVerificationExpiration(LocalDateTime.now().plusMinutes(15));
-        user.setEnabled(false);
+            sendVerificationEmail(user);
+            return data;
+        }catch (DataIntegrityViolationException e) {
+            String errorMessage = e.getMessage();
 
-        sendVerificationEmail(user);
+            // Verificar si el mensaje contiene el email o el username ingresado
+            if (errorMessage.contains(input.getEmail())) {
+                throw new DuplicateEmailException("Ya existe una cuenta con ese email.");
+            } else if (errorMessage.contains(input.getUsername())) {
+                throw new DuplicateUsernameException("Ya existe una cuenta con ese usuario.");
+            }
 
-        return userRepository.save(user);
+            throw new RuntimeException("Error desconocido al registrar usuario.");
+        }
     }
 
     public Usuario authenticate(UserLogin input) {
@@ -155,7 +162,7 @@ public class AuthService {
             user.setResetTokenExpiration(LocalDateTime.now().plusMinutes(30));
             userRepository.save(user);
 
-            String resetLink = "http://localhost:8080/auth/reset-password?token=" + token;
+            String resetLink = "http://localhost:5173/reset-password?token=" + token;
             String subject = "Restablecimiento de Contraseña";
             String message = "<html><body>"
                     + "<h2>Solicitud de Restablecimiento de Contraseña</h2>"
