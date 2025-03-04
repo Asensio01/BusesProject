@@ -1,10 +1,7 @@
 package busesProject.models;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Entity
 @Table(name = "rutas")
@@ -13,11 +10,20 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Ruta {
+
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "id_ruta")
-  private Long idRuta;
+  private Integer idRuta;
 
-  @Column(name = "nombre_ruta",nullable = false, unique = true, length = 50)
+  @Column(name = "nombre_ruta", nullable = false, unique = true, length = 50)
   private String nombreRuta;
+
+  public void setNombreRuta(String nombreRuta) {
+    this.nombreRuta = nombreRuta;
+  }
+
+  public String getNombreRuta() {
+    return nombreRuta;
+  }
 }

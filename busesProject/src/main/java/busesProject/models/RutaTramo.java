@@ -1,33 +1,47 @@
 package busesProject.models;
 
-import busesProject.enums.TipoViaje;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import busesProject.enums.TipoViaje;
 
 @Entity
 @Table(name = "rutas_tramos")
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
 public class RutaTramo {
-  @EmbeddedId
-  private RutaTramoId id;
+
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Column(name = "id_ruta_tramo")
+  private Integer idRutaTramo;
 
   @ManyToOne
-  @MapsId("idRuta")
-  @JoinColumn(name = "id_ruta")
+  @JoinColumn(name = "id_ruta", nullable = false)
   private Ruta ruta;
 
   @ManyToOne
-  @MapsId("idTramo")
-  @JoinColumn(name = "id_tramo")
+  @JoinColumn(name = "id_tramo", nullable = false)
   private Tramo tramo;
 
   @Enumerated(EnumType.STRING)
-  @Column(name = "tipo_viaje",insertable=false, updatable=false)
+  @Column(name = "tipo_viaje", nullable = false)
   private TipoViaje tipoViaje;
+
+  public RutaTramo() {}
+
+  public RutaTramo(Ruta ruta, Tramo tramo, TipoViaje tipoViaje) {
+    this.ruta = ruta;
+    this.tramo = tramo;
+    this.tipoViaje = tipoViaje;
+  }
+
+  // Getters y Setters
+  public Integer getIdRutaTramo() { return idRutaTramo; }
+  public void setIdRutaTramo(Integer idRutaTramo) { this.idRutaTramo = idRutaTramo; }
+
+  public Ruta getRuta() { return ruta; }
+  public void setRuta(Ruta ruta) { this.ruta = ruta; }
+
+  public Tramo getTramo() { return tramo; }
+  public void setTramo(Tramo tramo) { this.tramo = tramo; }
+
+  public TipoViaje getTipoViaje() { return tipoViaje; }
+  public void setTipoViaje(TipoViaje tipoViaje) { this.tipoViaje = tipoViaje; }
 }

@@ -1,139 +1,75 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import "../assets/styles/CrearRutas.css";
 
 function CrearRutas() {
   const [nombreRuta, setNombreRuta] = useState("");
-  const [ciudades, setCiudades] = useState([]);
-  const [tramos, setTramos] = useState([]);
-  const [ciudadOrigen, setCiudadOrigen] = useState("");
-  const [ciudadDestino, setCiudadDestino] = useState("");
-  const [horario, setHorario] = useState("");
   const [mensaje, setMensaje] = useState("");
+  const [cargando, setCargando] = useState(false);
 
-  // useEffect(() => {
-  //   fetch("http://localhost:8080/api/ciudades")
-  //     .then((res) => res.json())
-  //     .then((data) => setCiudades(data))
-  //     .catch((error) => console.error("Error al cargar ciudades:", error));
-  // }, []);
-
-  const agregarTramo = () => {
-    if (!ciudadOrigen || !ciudadDestino || !horario) {
-      alert("Todos los campos son obligatorios.");
-      return;
-    }
-    if (ciudadOrigen === ciudadDestino) {
-      alert("El origen y el destino no pueden ser iguales.");
-      return;
-    }
-
-    setTramos([
-      ...tramos,
-      { origen: ciudadOrigen, destino: ciudadDestino, horario },
-    ]);
-
-    // Limpiar los campos después de agregar el tramo
-    setCiudadOrigen("");
-    setCiudadDestino("");
-    setHorario("");
-  };
-
+  // Enviar la nueva ruta a la API
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (tramos.length === 0) {
-      alert("Debe agregar al menos un tramo.");
+    if (!nombreRuta.trim()) {
+      alert("⚠️ Debe ingresar un nombre para la ruta.");
       return;
     }
 
-    const nuevaRuta = { nombre_ruta: nombreRuta, tramos };
+    setCargando(true);
+    setMensaje("");
 
     try {
       const response = await fetch("http://localhost:8080/api/rutas", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(nuevaRuta),
+        body: JSON.stringify({ nombreRuta }),
       });
 
-      if (response.ok) {
-        setMensaje("Ruta creada exitosamente.");
-        setNombreRuta("");
-        setTramos([]);
-      } else {
-        setMensaje("Error al crear la ruta.");
+      if (!response.ok) {
+        throw new Error(`Error ${response.status}: No se pudo crear la ruta.`);
       }
+
+      setMensaje("✅ Ruta creada exitosamente.");
+      setNombreRuta("");
+
+      // Limpiar mensaje después de 5 segundos
+      setTimeout(() => setMensaje(""), 5000);
     } catch (error) {
-
-      return (
-        <div className="crear-rutas-container">
-          <h1>Crear Rutas</h1>
-          {mensaje && <p className="mensaje">{mensaje}</p>}
-          <form onSubmit={handleSubmit}>
-            <input
-              type="text"
-              placeholder="Nombre de la Ruta"
-              value={nombreRuta}
-              onChange={(e) => setNombreRuta(e.target.value)}
-              required
-            />
-
-            <h3>Agregar Tramos</h3>
-
-            <select
-              value={ciudadOrigen}
-              onChange={(e) => setCiudadOrigen(e.target.value)}
-              required
-            >
-              <option value="">Seleccionar Origen</option>
-              {ciudades.map((ciudad) => (
-                <option key={ciudad.id_ciudad} value={ciudad.id_ciudad}>
-                  {ciudad.nombre}
-                </option>
-              ))}
-            </select>
-
-            <select
-              value={ciudadDestino}
-              onChange={(e) => setCiudadDestino(e.target.value)}
-              required
-            >
-              <option value="">Seleccionar Destino</option>
-              {ciudades.map((ciudad) => (
-                <option key={ciudad.id_ciudad} value={ciudad.id_ciudad}>
-                  {ciudad.nombre}
-                </option>
-              ))}
-            </select>
-
-            <input
-              type="time"
-              value={horario}
-              onChange={(e) => setHorario(e.target.value)}
-              required
-            />
-
-            <button type="button" className="btn-primary" onClick={agregarTramo}>
-              Agregar Tramo
-            </button>
-
-            <h3>Tramos Agregados</h3>
-            <ul className="tramos-list">
-              {tramos.map((tramo, index) => (
-                <li key={index}>
-                  {ciudades.find((c) => c.id_ciudad == tramo.origen)?.nombre} →{" "}
-                  {ciudades.find((c) => c.id_ciudad == tramo.destino)?.nombre} |
-                  Horario: {tramo.horario}
-                </li>
-              ))}
-            </ul>
-
-            <button type="submit" className="btn-primary">
-              Crear Ruta
-            </button>
-          </form>
-        </div>
-      );
+      setMensaje(`❌ Error: ${error.message}`);
     }
-  }
+
+    setCargando(false);
+  };
+
+  return (
+    <div className="crear-rutas-container">
+      <h1>Crear Nueva Ruta</h1>
+      {mensaje && (
+        <p
+          className={`mensaje ${
+            mensaje.startsWith("✅") ? "success" : "error"
+          }`}
+        >
+          {mensaje}
+        </p>
+      )}
+
+      <form onSubmit={handleSubmit}>
+        <h3>Nombre de la Ruta</h3>
+        <input
+          type="text"
+          placeholder="Ingrese el nombre de la ruta"
+          value={nombreRuta}
+          onChange={(e) => setNombreRuta(e.target.value)}
+          required
+        />
+
+        <button type="submit" className="btn-primary" disabled={cargando}>
+          {cargando ? "Creando..." : "Crear Ruta"}
+        </button>
+      </form>
+    </div>
+  );
 }
+
 export default CrearRutas;
