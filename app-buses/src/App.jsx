@@ -19,33 +19,38 @@ function App() {
       <Router>
         <Routes>
           <Route path="/login" element={<Login />} />
-          <Route path="/forgot-password" element={<ForgotPassword />} />{" "}
-          {/* ✅ Nueva ruta */}
+          <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/reset-password" element={<ResetPassword />} />
+
+          {/* ✅ SOLO los usuarios con rol "USER" pueden acceder a "Home" */}
           <Route
             path="/home"
             element={
-              <ProtectedRoute>
+              <ProtectedRoute allowedRoles={["USER"]}>
                 <Home />
               </ProtectedRoute>
             }
           />
+
+          {/* ✅ SOLO los usuarios con rol "ADMIN" pueden acceder a "MenuAdmin" */}
           <Route
             path="/MenuAdmin/*"
             element={
-              <ProtectedRoute>
+              <ProtectedRoute allowedRoles={["ADMIN"]}>
                 <MenuAdmin />
               </ProtectedRoute>
             }
           />
+
           <Route
             path="/Roles"
             element={
-              <ProtectedRoute>
+              <ProtectedRoute allowedRoles={["ADMIN"]}>
                 <Roles />
               </ProtectedRoute>
             }
           />
+
           <Route path="*" element={<Navigate to="/login" />} />
         </Routes>
       </Router>
@@ -54,8 +59,6 @@ function App() {
 }
 
 export default App;
-
-
 
 //Pruebas otras paginas
 
