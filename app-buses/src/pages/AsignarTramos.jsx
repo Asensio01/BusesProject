@@ -35,7 +35,7 @@ function AsignarTramos() {
 
   // 🔹 Verificar si la asignación ya existe para la misma ruta en la misma hora
   const asignacionDuplicada = () => {
-    return asignaciones.some(
+    const duplicado = asignaciones.find(
       (asignacion) =>
         asignacion.ruta.idRuta.toString() === rutaSeleccionada &&
         asignacion.tramo.horaSalida === horaSalida &&
@@ -44,6 +44,12 @@ function AsignarTramos() {
         asignacion.tramo.duracion.toString() === duracion &&
         asignacion.tipoViaje === tipoViaje
     );
+  
+    if (duplicado) {
+      return `⚠️ Ya existe un tramo de ${duplicado.tramo.ciudadOrigen.nombre} a ${duplicado.tramo.ciudadDestino.nombre} con salida a las ${duplicado.tramo.horaSalida} en la ruta "${duplicado.ruta.nombreRuta}".`;
+    }
+  
+    return null;
   };
 
   // Enviar la relación ruta-tramo a la API
@@ -63,13 +69,12 @@ function AsignarTramos() {
     }
 
     // 🔹 Validar si la ruta ya tiene un tramo con los mismos datos y la misma hora
-    if (asignacionDuplicada()) {
-      setMensajeError(
-        "⚠️ No se puede asignar el mismo tramo a la misma ruta con la misma hora."
-      );
-      setTimeout(() => setMensajeError(""), 5000); // Eliminar mensaje después de 5 segundos
-      return;
-    }
+    const mensajeDuplicado = asignacionDuplicada();
+  if (mensajeDuplicado) {
+    setMensajeError(mensajeDuplicado);
+    setTimeout(() => setMensajeError(""), 5000);
+    return;
+  }
 
     setCargando(true);
     setMensaje("");

@@ -43,6 +43,14 @@ public class TramoService {
       throw new RuntimeException("La ciudad de origen y destino no pueden ser la misma.");
     }
 
+    boolean existeTramoDuplicado = tramoRepository.existsByCiudadesAndHorario(
+            tramoDTO.getIdCiudadOrigen(), tramoDTO.getIdCiudadDestino(),
+            tramoDTO.getHoraSalida(), tramoDTO.getDuracion());
+
+    if (existeTramoDuplicado) {
+      throw new RuntimeException("Ya existe un tramo con los mismos datos.");
+    }
+
     Tramo nuevoTramo = new Tramo();
     nuevoTramo.setCiudadOrigen(ciudadOrigen);
     nuevoTramo.setCiudadDestino(ciudadDestino);
@@ -69,6 +77,9 @@ public class TramoService {
     if (ciudadOrigen.equals(ciudadDestino)) {
       throw new RuntimeException("La ciudad de origen y destino no pueden ser la misma.");
     }
+
+
+
 
     tramoExistente.setCiudadOrigen(ciudadOrigen);
     tramoExistente.setCiudadDestino(ciudadDestino);

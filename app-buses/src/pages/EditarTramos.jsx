@@ -107,12 +107,9 @@ function EditarTramos() {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             idRuta: parseInt(rutaSeleccionada, 10),
-            idCiudadOrigen: parseInt(ciudadOrigen, 10),
-            idCiudadDestino: parseInt(ciudadDestino, 10),
-            horaSalida,
-            duracion: parseInt(duracion, 10),
+            idTramo: parseInt(asignacionSeleccionada, 10), // Usa el tramo asignado en lugar de las ciudades
             tipoViaje: tipoViaje || "IDA",
-          }),
+          })
         }
       );
 
