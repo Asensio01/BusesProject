@@ -46,8 +46,21 @@ function EditarRutas() {
         body: JSON.stringify({ nombreRuta: nuevoNombreRuta }),
       });
 
+      let data;
+      const contentType = response.headers.get("content-type");
+
+      // ✅ Verificar si la respuesta es JSON antes de intentar leerla
+      if (contentType && contentType.includes("application/json")) {
+        data = await response.json();
+      } else {
+        data = await response.text(); // Si no es JSON, leer como texto
+      }
+
       if (!response.ok) {
-        throw new Error(`Error ${response.status}: No se pudo actualizar la ruta.`);
+        if (response.status === 400 && data.includes("Ya existe una ruta")) {
+          throw new Error("⚠️ El nombre de esta ruta ya está asignado. Pruebe con otro nombre.");
+        }
+        throw new Error(`Error ${response.status}: ${data}`);
       }
 
       setMensaje("✅ Ruta actualizada exitosamente.");
@@ -65,7 +78,7 @@ function EditarRutas() {
       // Limpiar mensaje después de 5 segundos
       setTimeout(() => setMensaje(""), 5000);
     } catch (error) {
-      setMensaje(`❌ Error: ${error.message}`);
+      setMensaje(`❌ ${error.message}`);
     }
 
     setCargando(false);

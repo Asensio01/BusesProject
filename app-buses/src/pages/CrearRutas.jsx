@@ -25,8 +25,21 @@ function CrearRutas() {
         body: JSON.stringify({ nombreRuta }),
       });
 
+      let data;
+      const contentType = response.headers.get("content-type");
+
+      // ✅ Verificar si la respuesta es JSON antes de intentar leerla
+      if (contentType && contentType.includes("application/json")) {
+        data = await response.json();
+      } else {
+        data = await response.text(); // Si no es JSON, leer como texto
+      }
+
       if (!response.ok) {
-        throw new Error(`Error ${response.status}: No se pudo crear la ruta.`);
+        if (response.status === 400 && data.includes("Ya existe una ruta")) {
+          throw new Error("⚠️ Esa ruta ya ha sido creada. Pruebe con otro nombre.");
+        }
+        throw new Error(`Error ${response.status}: ${data}`);
       }
 
       setMensaje("✅ Ruta creada exitosamente.");
@@ -35,7 +48,7 @@ function CrearRutas() {
       // Limpiar mensaje después de 5 segundos
       setTimeout(() => setMensaje(""), 5000);
     } catch (error) {
-      setMensaje(`❌ Error: ${error.message}`);
+      setMensaje(`❌ ${error.message}`);
     }
 
     setCargando(false);
