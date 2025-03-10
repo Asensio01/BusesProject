@@ -1,10 +1,14 @@
 package busesProject.models;
 
-import jakarta.persistence.*;
 import busesProject.enums.TipoViaje;
+import jakarta.persistence.*;
 
 @Entity
-@Table(name = "rutas_tramos")
+@Table(name = "rutas_tramos",
+        uniqueConstraints = {
+                @UniqueConstraint(columnNames = {"id_ruta", "id_tramo"})
+        })
+
 public class RutaTramo {
 
   @Id
@@ -20,28 +24,49 @@ public class RutaTramo {
   @JoinColumn(name = "id_tramo", nullable = false)
   private Tramo tramo;
 
-  @Enumerated(EnumType.STRING)
-  @Column(name = "tipo_viaje", nullable = false)
-  private TipoViaje tipoViaje;
 
-  public RutaTramo() {}
+  @Column(name = "orden", nullable = false)
+  private Integer orden;
 
-  public RutaTramo(Ruta ruta, Tramo tramo, TipoViaje tipoViaje) {
+  public RutaTramo() {
+  }
+
+  public RutaTramo(Ruta ruta, Tramo tramo, Integer orden) {
     this.ruta = ruta;
     this.tramo = tramo;
-    this.tipoViaje = tipoViaje;
+    this.orden = orden;
   }
 
   // Getters y Setters
-  public Integer getIdRutaTramo() { return idRutaTramo; }
-  public void setIdRutaTramo(Integer idRutaTramo) { this.idRutaTramo = idRutaTramo; }
+  public Integer getIdRutaTramo() {
+    return idRutaTramo;
+  }
 
-  public Ruta getRuta() { return ruta; }
-  public void setRuta(Ruta ruta) { this.ruta = ruta; }
+  public void setIdRutaTramo(Integer idRutaTramo) {
+    this.idRutaTramo = idRutaTramo;
+  }
 
-  public Tramo getTramo() { return tramo; }
-  public void setTramo(Tramo tramo) { this.tramo = tramo; }
+  public Ruta getRuta() {
+    return ruta;
+  }
 
-  public TipoViaje getTipoViaje() { return tipoViaje; }
-  public void setTipoViaje(TipoViaje tipoViaje) { this.tipoViaje = tipoViaje; }
+  public void setRuta(Ruta ruta) {
+    this.ruta = ruta;
+  }
+
+  public Tramo getTramo() {
+    return tramo;
+  }
+
+  public void setTramo(Tramo tramo) {
+    this.tramo = tramo;
+  }
+
+  public Integer getOrden() {
+    return orden;
+  }
+
+  public void setOrden(Integer orden) {
+    this.orden = orden;
+  }
 }

@@ -7,20 +7,22 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "autobuses_caracteristicas")
+@Table(name = "autobuses_caracteristicas",
+        uniqueConstraints = @UniqueConstraint(columnNames = {"id_autobus", "id_caracteristica"}))
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class AutobusCaracteristica {
-  @EmbeddedId
-  private AutobusCaracteristicaId id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
 
   @ManyToOne
-  @MapsId("idAutobus")
+  @JoinColumn(name = "id_autobus", nullable = false)
   private Autobus autobus;
 
   @ManyToOne
-  @MapsId("idCaracteristica")
+  @JoinColumn(name = "id_caracteristica", nullable = false)
   private CaracteristicaBus caracteristicaBus;
 }

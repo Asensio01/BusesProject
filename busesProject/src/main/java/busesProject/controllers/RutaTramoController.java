@@ -1,7 +1,6 @@
 package busesProject.controllers;
 
 import busesProject.dtos.RutaTramoDTO;
-import busesProject.dtos.RutaTramoSinTipoDTO;
 import busesProject.models.RutaTramo;
 import busesProject.Services.RutaTramoService;
 import org.springframework.http.ResponseEntity;

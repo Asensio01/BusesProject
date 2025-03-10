@@ -1,8 +1,8 @@
 package busesProject.Services;
 
+import busesProject.dtos.CiudadDTO;
 import busesProject.models.Ciudad;
 import busesProject.repositories.CiudadRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
 
@@ -18,4 +18,12 @@ public class CiudadService {
   public List<Ciudad> obtenerTodasLasCiudades() {
     return ciudadRepository.findAll();
   }
+  public Ciudad addCity(CiudadDTO ciudadData) {
+    Ciudad newCiudad = Ciudad.builder()
+            .nombre(ciudadData.getNombre())
+            .departamento(ciudadData.getDepartamento())
+            .build();
+    return ciudadRepository.save(newCiudad);
+  }
+
 }

@@ -1,9 +1,6 @@
-
 package busesProject.Services;
 
 import busesProject.dtos.RutaTramoDTO;
-import busesProject.dtos.RutaTramoSinTipoDTO;
-import busesProject.enums.TipoViaje;
 import busesProject.models.Ruta;
 import busesProject.models.RutaTramo;
 import busesProject.models.Tramo;
@@ -14,7 +11,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class RutaTramoService {
@@ -23,7 +19,9 @@ public class RutaTramoService {
   private final RutaRepository rutaRepository;
   private final TramoRepository tramoRepository;
 
-  public RutaTramoService(RutaTramoRepository rutaTramoRepository, RutaRepository rutaRepository, TramoRepository tramoRepository) {
+  public RutaTramoService(RutaTramoRepository rutaTramoRepository,
+                          RutaRepository rutaRepository,
+                          TramoRepository tramoRepository) {
     this.rutaTramoRepository = rutaTramoRepository;
     this.rutaRepository = rutaRepository;
     this.tramoRepository = tramoRepository;
@@ -47,14 +45,12 @@ public class RutaTramoService {
     Tramo tramo = tramoRepository.findById(rutaTramoDTO.getIdTramo())
             .orElseThrow(() -> new RuntimeException("Tramo no encontrado"));
 
-    TipoViaje tipoViaje = TipoViaje.valueOf(rutaTramoDTO.getTipoViaje().toUpperCase());
-
-    // Validar duplicados
-    if (rutaTramoRepository.existsByRutaAndTramoAndTipoViaje(ruta, tramo, tipoViaje)) {
+    // Validar duplicados por ruta y tramo
+    if (rutaTramoRepository.existsByRutaAndTramo(ruta, tramo)) {
       throw new RuntimeException("Esta asignación ya existe.");
     }
 
-    RutaTramo rutaTramo = new RutaTramo(ruta, tramo, tipoViaje);
+    RutaTramo rutaTramo = new RutaTramo(ruta, tramo, rutaTramoDTO.getOrden());
     return rutaTramoRepository.save(rutaTramo);
   }
 
@@ -72,17 +68,15 @@ public class RutaTramoService {
     Tramo tramo = tramoRepository.findById(rutaTramoDTO.getIdTramo())
             .orElseThrow(() -> new RuntimeException("Tramo no encontrado"));
 
-    TipoViaje tipoViaje = TipoViaje.valueOf(rutaTramoDTO.getTipoViaje().toUpperCase());
-
-    // Validar duplicados (excepto el mismo registro)
+    // Validar duplicados excepto para el mismo registro
     if (!rutaTramo.getIdRutaTramo().equals(id) &&
-            rutaTramoRepository.existsByRutaAndTramoAndTipoViaje(ruta, tramo, tipoViaje)) {
+            rutaTramoRepository.existsByRutaAndTramo(ruta, tramo)) {
       throw new RuntimeException("Ya existe una asignación con estos valores.");
     }
 
     rutaTramo.setRuta(ruta);
     rutaTramo.setTramo(tramo);
-    rutaTramo.setTipoViaje(tipoViaje);
+    rutaTramo.setOrden(rutaTramoDTO.getOrden());
 
     return rutaTramoRepository.save(rutaTramo);
   }

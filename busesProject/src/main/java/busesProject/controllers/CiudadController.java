@@ -1,8 +1,9 @@
 package busesProject.controllers;
 
+import busesProject.dtos.CiudadDTO;
 import busesProject.models.Ciudad;
 import busesProject.Services.CiudadService;
-import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,5 +23,11 @@ public class CiudadController {
   @GetMapping
   public List<Ciudad> obtenerCiudades() {
     return ciudadService.obtenerTodasLasCiudades();
+  }
+
+  @PostMapping
+  public ResponseEntity<?> createCiudad(@Valid @RequestBody CiudadDTO ciudad){
+    Ciudad newCity = ciudadService.addCity(ciudad);
+    return ResponseEntity.ok(newCity);
   }
 }

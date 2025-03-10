@@ -9,5 +9,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface RutaTramoRepository extends JpaRepository<RutaTramo, Integer> {
-  boolean existsByRutaAndTramoAndTipoViaje(Ruta ruta, Tramo tramo, TipoViaje tipoViaje);
+  boolean existsByRutaAndTramo(Ruta ruta, Tramo tramo);
 }
