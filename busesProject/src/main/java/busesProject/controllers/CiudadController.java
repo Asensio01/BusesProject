@@ -4,6 +4,7 @@ import busesProject.dtos.CiudadDTO;
 import busesProject.models.Ciudad;
 import busesProject.Services.CiudadService;
 import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,7 +28,23 @@ public class CiudadController {
 
   @PostMapping
   public ResponseEntity<?> createCiudad(@Valid @RequestBody CiudadDTO ciudad){
-    Ciudad newCity = ciudadService.addCity(ciudad);
-    return ResponseEntity.ok(newCity);
+    try {
+      Ciudad newCity = ciudadService.addCity(ciudad);
+      return ResponseEntity.status(HttpStatus.CREATED).body(newCity);
+    }catch (Exception e){
+      return ResponseEntity.badRequest().body(e.getMessage());
+    }
+  }
+
+  @PutMapping("/{id}")
+  public ResponseEntity<?> updateCiudad(@PathVariable Integer id, @Valid @RequestBody CiudadDTO ciudad){
+    Ciudad city = ciudadService.updateCity(id,ciudad);
+    return ResponseEntity.ok(ciudad);
+  }
+
+  @DeleteMapping("/{id}")
+  public ResponseEntity<?> deleteCiudad(@RequestBody Integer id){
+    ciudadService.deleteCity(id);
+    return ResponseEntity.noContent().build();
   }
 }
