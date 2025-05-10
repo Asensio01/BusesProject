@@ -1,0 +1,28 @@
+.welcome-container {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  padding: 20px;
+  text-align: center;
+  color: white;
+  transition: transform 0.5s ease-in-out;
+}
+
+.welcome-title {
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.welcome-text {
+  font-size: 14px;
+  max-width: 75%;
+}
+
+.welcome-button {
+  font-size: 15px;
+  width: 55%;
+  max-width: 200px;
+}

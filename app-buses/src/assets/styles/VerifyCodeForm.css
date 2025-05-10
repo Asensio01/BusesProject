@@ -1,0 +1,58 @@
+.verify-code-form {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 15px;
+  padding: 20px;
+  background-color: #a642f8;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgb(241, 87, 255);
+  width: 350px;
+  text-align: center;
+}
+
+.code-inputs {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+.code-inputs input {
+  width: 40px;
+  height: 40px;
+  text-align: center;
+  font-size: 1.5rem;
+  border: 2px solid #243774;
+  border-radius: 5px;
+  outline: none;
+  transition: 0.2s;
+  background-color: white;
+  color: black;
+}
+
+.code-inputs input:focus {
+  border-color: #E7BA45;
+  box-shadow: 0 0 5px rgba(231, 186, 69, 0.5);
+}
+
+.resend-button {
+  background-color: #243774;
+  color: white;
+  padding: 10px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background 0.3s ease-in-out;
+}
+
+.resend-button:disabled {
+  background-color: gray;
+  cursor: not-allowed;
+}
+
+.attempts-text {
+  font-size: 14px;
+  color: white;
+}

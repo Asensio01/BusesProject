@@ -18,6 +18,10 @@ public class Autobus {
     @Column(name = "id_autobus")
     private Long idAutobus;
 
+    @ManyToOne
+    @JoinColumn(name = "id_ruta", nullable = false)
+    private Ruta ruta;
+
     @Column(nullable = false, unique = true, length = 20)
     private String placa;
 
